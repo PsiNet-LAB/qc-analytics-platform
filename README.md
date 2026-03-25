@@ -14,3 +14,11 @@ El sistema opera bajo una infraestructura dual:
 * **Front-end:** Renderizado reactivo mediante Streamlit, con inyección de CSS personalizado para una interfaz minimalista (Glassmorphism y paletas Pantone). Soporte nativo para alternancia entre modo claro y oscuro.
 * **Motor de Visualización:** Gráficos interactivos de convergencia operativa construidos con Plotly Express.
 * **Back-end & I/O:** Sistema de persistencia de estado automatizado que sincroniza las modificaciones de la matriz de datos iterando sobre un archivo plano (CSV) en milisegundos, garantizando la integridad referencial.
+
+## Estructura de Datos
+La plataforma consume una matriz estructural con las siguientes variables de control de flujo:
+Semana | Fecha | Horario | Proyecto | Autores | Revisor | Estado | Avance (%) | Observaciones
+
+## Contacto e Institucionalidad
+Desarrollado en el marco de las investigaciones en métodos cuantitativos avanzados y análisis de redes para el estudio del comportamiento humano.
+Contáctese a: psinetlab@gmail.com
