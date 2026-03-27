@@ -148,14 +148,16 @@ with tab_general:
     
     with col_chart:
         st.markdown("<h3 class='styled-header'>Convergencia Operativa</h3>", unsafe_allow_html=True)
-        df_chart = df.sort_values('Fecha').groupby(['Proyecto', 'Estado'], as_index=False)['Avance (%)'].last()
+        df_last = df.loc[df.groupby(['Proyecto', 'Estado'])['Fecha'].idxmax()]
+        df_chart = df_last[['Proyecto', 'Estado', 'Avance (%)']].copy()
         df_chart = df_chart.sort_values('Avance (%)', ascending=True)
+        sorted_projects = df_chart['Proyecto'].unique().tolist()
         fig = px.bar(df_chart, x='Avance (%)', y='Proyecto', color='Estado', color_discrete_map=STATUS_COLORS, orientation='h', text='Avance (%)')
         fig.update_traces(texttemplate='<b>%{text:.0f}%</b>', textposition='inside', insidetextanchor='middle', marker_line_width=0, opacity=0.9)
         fig.update_layout(
             plot_bgcolor=UI_COLORS['plotly_bg'], paper_bgcolor=UI_COLORS['plotly_bg'],
             xaxis=dict(showgrid=False, showticklabels=False, title="", zeroline=False), 
-            yaxis=dict(showgrid=False, title="", categoryorder='array', categoryarray=df_chart.sort_values('Avance (%)', ascending=True)['Proyecto'].unique().tolist(), tickfont=dict(color=UI_COLORS['plotly_text'], size=13, family="Montserrat")),
+            yaxis=dict(showgrid=False, title="", categoryorder='array', categoryarray=sorted_projects, tickfont=dict(color=UI_COLORS['plotly_text'], size=13, family="Montserrat")),
             font=dict(family="Helvetica Neue, sans-serif", color=UI_COLORS['plotly_text']),
             margin=dict(l=0, r=0, t=10, b=0), showlegend=True,
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, title="", font=dict(size=11, color=UI_COLORS['plotly_text']))
@@ -221,9 +223,9 @@ with tab_general:
         
         # Opción para añadir un autor nuevo que no esté en la lista
         nuevo_autor = st.text_input("Añadir investigador no listado:", placeholder="Nombre completo del investigador")
-        if nuevo_autor and nuevo_autor.strip():
+        if nuevo_autor:
             nuevo_autor = nuevo_autor.strip()
-            if nuevo_autor not in lista_investigadores:
+            if nuevo_autor and nuevo_autor not in lista_investigadores:
                 lista_investigadores.append(nuevo_autor)
                 lista_investigadores.sort()
         
