@@ -7,7 +7,7 @@ import os
 # ==========================================
 # 1. CONFIGURACIÓN Y ESTADO DE SESIÓN
 # ==========================================
-st.set_page_config(page_title="Analytics QC Premium", layout="wide", page_icon="💎")
+st.set_page_config(page_title="QC Projects Analytics", layout="wide", page_icon="📊")
 
 # Archivo central de base de datos
 FILE_PATH = "Cronograma_Revisiones_2026 QC.xlsx - Cronograma 2026.csv"
@@ -27,15 +27,17 @@ STATUS_COLORS = {
 
 if st.session_state.theme == 'light':
     UI_COLORS = {
-        "bg": "#F8F9FA", "card_bg": "rgba(255, 255, 255, 0.9)", "text": "#2C3E50",
-        "subtext": "#7F8C8D", "border": "#EAEAEA", "shadow": "rgba(0, 0, 0, 0.05)",
-        "plotly_bg": "rgba(0,0,0,0)", "plotly_text": "#2C3E50", "plotly_grid": "#EAEAEA"
+        "bg": "#F5F7FA", "card_bg": "rgba(255, 255, 255, 0.95)", "text": "#1A2332",
+        "subtext": "#5A6978", "border": "#D0D7DE", "shadow": "rgba(31, 35, 40, 0.08)",
+        "plotly_bg": "rgba(0,0,0,0)", "plotly_text": "#1A2332", "plotly_grid": "#D0D7DE",
+        "accent": "#0969DA"
     }
 else: 
     UI_COLORS = {
         "bg": "#121212", "card_bg": "rgba(30, 30, 30, 0.9)", "text": "#ECECEC",
         "subtext": "#A0A0A0", "border": "#333333", "shadow": "rgba(0, 0, 0, 0.3)",
-        "plotly_bg": "rgba(0,0,0,0)", "plotly_text": "#ECECEC", "plotly_grid": "#333333"
+        "plotly_bg": "rgba(0,0,0,0)", "plotly_text": "#ECECEC", "plotly_grid": "#333333",
+        "accent": "#58A6FF"
     }
 
 # ==========================================
@@ -47,12 +49,12 @@ st.markdown(f"""
     .stApp {{ background-color: {UI_COLORS['bg']}; color: {UI_COLORS['text']}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }}
     h1, h2, h3, .styled-header {{ font-family: 'Montserrat', sans-serif !important; font-weight: 300 !important; color: {UI_COLORS['text']} !important; letter-spacing: -0.5px; }}
     div[data-testid="metric-container"] {{ background-color: {UI_COLORS['card_bg']} !important; border: 1px solid {UI_COLORS['border']} !important; padding: 20px 25px !important; border-radius: 16px !important; box-shadow: 0px 8px 16px {UI_COLORS['shadow']} !important; transition: all 0.3s ease-in-out; backdrop-filter: blur(5px); }}
-    div[data-testid="metric-container"]:hover {{ transform: translateY(-4px); box-shadow: 0px 12px 20px {UI_COLORS['shadow']} !important; border-color: #3498DB; }}
+    div[data-testid="metric-container"]:hover {{ transform: translateY(-4px); box-shadow: 0px 12px 20px {UI_COLORS['shadow']} !important; border-color: {UI_COLORS['accent']}; }}
     div[data-testid="stMetricLabel"] {{ color: {UI_COLORS['subtext']} !important; font-size: 14px !important; text-transform: uppercase; letter-spacing: 1px; }}
     div[data-testid="stMetricValue"] {{ color: {UI_COLORS['text']} !important; font-weight: 600 !important; font-size: 32px !important; }}
     .stTabs [data-baseweb="tab-list"] {{ gap: 10px; background-color: transparent; }}
     .stTabs [data-baseweb="tab"] {{ height: 45px; white-space: pre; background-color: {UI_COLORS['card_bg']}; border-radius: 8px 8px 0px 0px; border: 1px solid {UI_COLORS['border']}; border-bottom: none; color: {UI_COLORS['subtext']}; font-family: 'Montserrat', sans-serif; font-weight: 400; transition: all 0.2s; }}
-    .stTabs [aria-selected="true"] {{ background-color: {UI_COLORS['bg']} !important; color: #3498DB !important; font-weight: 600 !important; }}
+    .stTabs [aria-selected="true"] {{ background-color: {UI_COLORS['bg']} !important; color: {UI_COLORS['accent']} !important; font-weight: 600 !important; }}
     #MainMenu {{visibility: hidden;}} footer {{visibility: hidden;}}
     .styled-section {{ background-color: {UI_COLORS['card_bg']}; border: 1px solid {UI_COLORS['border']}; padding: 25px; border-radius: 16px; margin-bottom: 20px; }}
 </style>
@@ -62,7 +64,7 @@ st.markdown(f"""
 # 4. BARRA LATERAL - CONTROL DE TEMA
 # ==========================================
 with st.sidebar:
-    st.markdown("<h2 class='styled-header'>💎 Analytics Premium</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='styled-header'>📊 QC Projects Analytics</h2>", unsafe_allow_html=True)
     st.markdown("---")
     theme_selection = st.radio("Seleccione la visualización:", ('Claro Minimalista', 'Oscuro Sofisticado'), index=0 if st.session_state.theme == 'light' else 1)
     new_theme = 'light' if theme_selection == 'Claro Minimalista' else 'dark'
@@ -124,12 +126,12 @@ lista_investigadores = sorted(list(todos_los_autores))
 # ==========================================
 st.markdown(f"""
 <div style='margin-bottom: 2.5rem;'>
-    <h1 class='styled-header' style='font-size: 42px; margin-bottom: 0.5rem;'>Control Analítico de Instrumentos 2026</h1>
+    <h1 class='styled-header' style='font-size: 42px; margin-bottom: 0.5rem;'>📊 QC Projects Analytics</h1>
     <p style='color: {UI_COLORS['subtext']}; font-size: 18px; font-weight: 300;'>Plataforma centralizada de alta dirección para la supervisión y gestión de calidad operativa.</p>
 </div>
 """, unsafe_allow_html=True)
 
-tab_general, tab_perfiles = st.tabs(["📊 Panel Operativo de Proyectos", "👤 Inteligencia de Investigador"])
+tab_general, tab_perfiles = st.tabs(["📊 Panel Operativo de Proyectos", "👤 Perfil de Investigador"])
 
 # ------------------------------------------
 # PESTAÑA 1: PANEL GENERAL
@@ -146,13 +148,16 @@ with tab_general:
     
     with col_chart:
         st.markdown("<h3 class='styled-header'>Convergencia Operativa</h3>", unsafe_allow_html=True)
-        df_chart = df.groupby(['Proyecto', 'Estado'], as_index=False)['Avance (%)'].mean()
+        df_last = df.loc[df.groupby(['Proyecto', 'Estado'])['Fecha'].idxmax()]
+        df_chart = df_last[['Proyecto', 'Estado', 'Avance (%)']].copy()
+        df_chart = df_chart.sort_values('Avance (%)', ascending=True)
+        sorted_projects = df_chart['Proyecto'].unique().tolist()
         fig = px.bar(df_chart, x='Avance (%)', y='Proyecto', color='Estado', color_discrete_map=STATUS_COLORS, orientation='h', text='Avance (%)')
         fig.update_traces(texttemplate='<b>%{text:.0f}%</b>', textposition='inside', insidetextanchor='middle', marker_line_width=0, opacity=0.9)
         fig.update_layout(
             plot_bgcolor=UI_COLORS['plotly_bg'], paper_bgcolor=UI_COLORS['plotly_bg'],
             xaxis=dict(showgrid=False, showticklabels=False, title="", zeroline=False), 
-            yaxis=dict(showgrid=False, title="", tickfont=dict(color=UI_COLORS['plotly_text'], size=13, family="Montserrat")),
+            yaxis=dict(showgrid=False, title="", categoryorder='array', categoryarray=sorted_projects, tickfont=dict(color=UI_COLORS['plotly_text'], size=13, family="Montserrat")),
             font=dict(family="Helvetica Neue, sans-serif", color=UI_COLORS['plotly_text']),
             margin=dict(l=0, r=0, t=10, b=0), showlegend=True,
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, title="", font=dict(size=11, color=UI_COLORS['plotly_text']))
@@ -194,6 +199,18 @@ with tab_general:
             st.rerun()
 
     st.divider()
+
+    # Botón de descarga de la matriz actualizada
+    df_download = df.copy()
+    df_download['Fecha'] = df_download['Fecha'].dt.strftime('%d/%m/%Y')
+    csv_data = df_download.to_csv(index=False, encoding='utf-8')
+    st.download_button(
+        label="📥 Descargar Matriz Actualizada",
+        data=csv_data,
+        file_name="Matriz_QC_Actualizada.csv",
+        mime="text/csv",
+        type="primary"
+    )
     
     st.markdown("<div class='styled-section'>", unsafe_allow_html=True)
     st.markdown("<h3 class='styled-header'>Gestión de Equipos de Asignación</h3>", unsafe_allow_html=True)
@@ -203,6 +220,14 @@ with tab_general:
     with col_b:
         idx_proyecto = df[df['Proyecto'] == proyecto_seleccionado].index[0]
         autores_actuales = df.loc[idx_proyecto, 'Autores'].split('; ') if pd.notna(df.loc[idx_proyecto, 'Autores']) else []
+        
+        # Opción para añadir un autor nuevo que no esté en la lista
+        nuevo_autor = st.text_input("Añadir investigador no listado:", placeholder="Nombre completo del investigador")
+        if nuevo_autor:
+            nuevo_autor = nuevo_autor.strip()
+            if nuevo_autor and nuevo_autor not in lista_investigadores:
+                lista_investigadores.append(nuevo_autor)
+                lista_investigadores.sort()
         
         nuevos_autores = st.multiselect(
             "Investigadores asignados al QC:", 
@@ -217,7 +242,7 @@ with tab_general:
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ------------------------------------------
-# PESTAÑA 2: INTELIGENCIA DE INVESTIGADOR
+# PESTAÑA 2: PERFIL DE INVESTIGADOR
 # ------------------------------------------
 with tab_perfiles:
     st.markdown("<div class='styled-section'>", unsafe_allow_html=True)
