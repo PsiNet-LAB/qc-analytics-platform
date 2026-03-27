@@ -55,8 +55,21 @@ st.markdown(f"""
     .stTabs [data-baseweb="tab-list"] {{ gap: 10px; background-color: transparent; }}
     .stTabs [data-baseweb="tab"] {{ height: 45px; white-space: pre; background-color: {UI_COLORS['card_bg']}; border-radius: 8px 8px 0px 0px; border: 1px solid {UI_COLORS['border']}; border-bottom: none; color: {UI_COLORS['subtext']}; font-family: 'Montserrat', sans-serif; font-weight: 400; transition: all 0.2s; }}
     .stTabs [aria-selected="true"] {{ background-color: {UI_COLORS['bg']} !important; color: {UI_COLORS['accent']} !important; font-weight: 600 !important; }}
+    .stApp p, .stApp label, .stApp span {{ color: {UI_COLORS['text']}; }}
+    .stApp div[data-testid="stWidgetLabel"] p {{ color: {UI_COLORS['subtext']} !important; }}
+    .stApp div[data-testid="stMarkdownContainer"] p {{ color: {UI_COLORS['text']}; }}
+    .stApp button[data-testid="stBaseButton-primary"] span,
+    .stApp button[data-testid="stBaseButton-primary"] p,
+    .stApp button[data-testid="stBaseButton-primaryFormSubmit"] span,
+    .stApp button[data-testid="stBaseButton-primaryFormSubmit"] p {{ color: #FFFFFF !important; }}
+    .stApp div[data-baseweb="tag"] span {{ color: #FFFFFF !important; }}
+    .stSelectbox div[data-baseweb="select"] span {{ color: {UI_COLORS['text']} !important; }}
+    .stApp .stRadio label p, .stApp .stRadio label span {{ color: {UI_COLORS['text']} !important; }}
+    .stApp .stRadio > label > span {{ color: {UI_COLORS['subtext']} !important; }}
+    div[data-testid="stMetricLabel"] p {{ color: {UI_COLORS['subtext']} !important; }}
+    div[data-testid="stMetricValue"] p {{ color: {UI_COLORS['text']} !important; }}
     #MainMenu {{visibility: hidden;}} footer {{visibility: hidden;}}
-    .styled-section {{ background-color: {UI_COLORS['card_bg']}; border: 1px solid {UI_COLORS['border']}; padding: 25px; border-radius: 16px; margin-bottom: 20px; }}
+    .styled-section {{ background-color: {UI_COLORS['card_bg']}; border: 1px solid {UI_COLORS['border']}; padding: 25px; border-radius: 16px; margin-bottom: 20px; color: {UI_COLORS['text']}; }}
 </style>
 """, unsafe_allow_html=True)
 
