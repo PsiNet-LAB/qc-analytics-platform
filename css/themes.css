@@ -1,0 +1,63 @@
+/* themes.css — CSS custom properties for light and dark themes.
+ * Single Responsibility: define all design tokens used across the platform.
+ * Legacy browsers that do not support CSS variables will read static fallback
+ * values declared in legacy.css via the .no-css-vars class.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');
+
+/* ── Light theme (default) ──────────────────────────────────────────── */
+:root {
+    --clr-bg:           #F5F7FA;
+    --clr-card-bg:      rgba(255, 255, 255, 0.95);
+    --clr-text:         #1A2332;
+    --clr-subtext:      #5A6978;
+    --clr-border:       #D0D7DE;
+    --clr-shadow:       rgba(31, 35, 40, 0.08);
+    --clr-accent:       #0969DA;
+    --clr-accent-hover: #0550AE;
+    --clr-danger:       #CF222E;
+    --clr-input-bg:     #FFFFFF;
+
+    /* Status badge colours */
+    --clr-status-approved: #AEE1B1;
+    --clr-status-review:   #FDE093;
+    --clr-status-progress: #AEC6CF;
+    --clr-status-pending:  #E5E5E5;
+
+    /* Typography */
+    --font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-heading: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+    /* Spacing scale */
+    --space-xs:  4px;
+    --space-sm:  8px;
+    --space-md:  16px;
+    --space-lg:  24px;
+    --space-xl:  32px;
+    --space-2xl: 48px;
+
+    /* Border radii */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+
+    /* Sidebar width */
+    --sidebar-w: 260px;
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-med:  0.3s ease-in-out;
+}
+
+/* ── Dark theme override ─────────────────────────────────────────────── */
+.theme-dark {
+    --clr-bg:           #121212;
+    --clr-card-bg:      rgba(30, 30, 30, 0.9);
+    --clr-text:         #ECECEC;
+    --clr-subtext:      #A0A0A0;
+    --clr-border:       #333333;
+    --clr-shadow:       rgba(0, 0, 0, 0.3);
+    --clr-accent:       #58A6FF;
+    --clr-accent-hover: #79B8FF;
+    --clr-input-bg:     #1E1E1E;
+}

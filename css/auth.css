@@ -1,0 +1,121 @@
+/* auth.css — Login page styles.
+ * Single Responsibility: style the authentication / login screen.
+ */
+
+/* ── Login page body override ────────────────────────────────────────── */
+body.auth-page {
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -ms-flex-align: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: var(--space-lg);
+}
+
+/* ── Auth container ──────────────────────────────────────────────────── */
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--clr-card-bg);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2xl) var(--space-xl);
+    box-shadow: 0 16px 40px var(--clr-shadow);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .auth-container {
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* ── Auth header ─────────────────────────────────────────────────────── */
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.auth-header h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--clr-text);
+    margin-bottom: var(--space-sm);
+}
+
+.auth-subtitle {
+    font-size: 13px;
+    color: var(--clr-subtext);
+    line-height: 1.5;
+}
+
+/* ── Auth institution badge ──────────────────────────────────────────── */
+.auth-institution {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    font-size: 12px;
+    color: var(--clr-subtext);
+    margin-bottom: var(--space-xl);
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--clr-bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--clr-border);
+}
+
+/* ── Auth form ───────────────────────────────────────────────────────── */
+.auth-form .form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.auth-form .form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--clr-subtext);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-xs);
+    display: block;
+}
+
+.auth-form .form-control {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+}
+
+/* ── Error message ───────────────────────────────────────────────────── */
+.form-error {
+    padding: 10px 14px;
+    background-color: rgba(207, 34, 46, 0.1);
+    border: 1px solid rgba(207, 34, 46, 0.3);
+    border-radius: var(--radius-sm);
+    color: var(--clr-danger);
+    font-size: 13px;
+    margin-bottom: var(--space-md);
+}
+
+.form-error[hidden] {
+    display: none;
+}
+
+/* ── Submit button ───────────────────────────────────────────────────── */
+.auth-form .btn-primary {
+    height: 46px;
+    font-size: 15px;
+    margin-top: var(--space-md);
+}
+
+/* ── Footer note ─────────────────────────────────────────────────────── */
+.auth-footer {
+    text-align: center;
+    margin-top: var(--space-lg);
+    font-size: 12px;
+    color: var(--clr-subtext);
+}

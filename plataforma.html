@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Plataforma Analítica QC — Panel centralizado de supervisión y gestión de calidad operativa.">
-    <title>Plataforma Analítica QC</title>
+    <meta name="description" content="Plataforma Analítica QC — Redirigiendo a la nueva plataforma nativa.">
+    <meta http-equiv="refresh" content="3; url=index.html">
+    <title>Plataforma Analítica QC — Redirigiendo</title>
 
     <!-- Legacy-browser support: polyfills and feature flags -->
     <script src="browser-support.js" defer></script>
@@ -192,44 +193,51 @@
          ============================================================ -->
     <main id="main-content" role="main" aria-label="Plataforma Analítica QC">
 
-        <!-- Loading overlay displayed while the embedded app initialises -->
+        <!--
+            ╔══════════════════════════════════════════════════════════════╗
+            ║  PLATAFORMA STREAMLIT — DESHABILITADA                       ║
+            ║                                                              ║
+            ║  La plataforma Streamlit ha sido reemplazada por una         ║
+            ║  plataforma nativa HTML/CSS/JS disponible en:                ║
+            ║    https://qc-projects.github.io                             ║
+            ║                                                              ║
+            ║  Este archivo redirige automáticamente a index.html.         ║
+            ╚══════════════════════════════════════════════════════════════╝
+        -->
+
         <div
             class="loading-overlay"
             id="loadingOverlay"
             role="status"
             aria-live="polite"
-            aria-label="Cargando aplicación"
+            aria-label="Redirigiendo"
         >
             <div class="loading-spinner" aria-hidden="true"></div>
-            <p class="loading-text">Cargando plataforma…</p>
+            <p class="loading-text">
+                Redirigiendo a la nueva plataforma…<br>
+                <a href="index.html" style="color:#0969DA;">Haga clic aquí si no es redirigido automáticamente.</a>
+            </p>
         </div>
 
+        <!-- iframe Streamlit DESHABILITADO — reemplazado por plataforma nativa -->
+        <!--
         <iframe
             id="appFrame"
             class="app-frame"
-            src="https://su-enlace-actual.streamlit.app/?embed=true"
-            title="Plataforma Analítica QC — Panel de supervisión y gestión de calidad operativa"
+            src="STREAMLIT_DISABLED"
+            title="[DESHABILITADO] Plataforma Analítica QC en Streamlit"
             aria-label="Plataforma Analítica QC"
             loading="lazy"
             allowfullscreen
         ></iframe>
+        -->
 
     </main>
 
     <script>
         (function () {
-            var frame   = document.getElementById('appFrame');
-            var overlay = document.getElementById('loadingOverlay');
-            if (!frame || !overlay) { return; }
-
-            frame.addEventListener('load', function () {
-                overlay.setAttribute('hidden', '');
-            });
-
-            // Fallback: hide overlay after 15 s if the load event never fires
-            setTimeout(function () {
-                overlay.setAttribute('hidden', '');
-            }, 15000);
+            /* Redirect immediately to the native HTML platform */
+            window.location.replace('index.html');
         }());
     </script>
 

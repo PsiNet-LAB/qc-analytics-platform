@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inicio de sesión — Plataforma Analítica QC. Acceso exclusivo para miembros del equipo PsiNet-LAB.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>Iniciar sesión — QC Projects Analytics</title>
+
+    <!-- Legacy-browser support: polyfills and feature-detection flags.
+         Loaded synchronously so flags are available before CSS renders. -->
+    <script src="browser-support.js"></script>
+
+    <!-- Stylesheets (ordered from generic to specific) -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/legacy.css">
+</head>
+
+<body class="theme-light auth-page">
+
+    <!-- Accessibility: skip directly to the login form -->
+    <a class="skip-link" href="#login-form">Ir al formulario de inicio de sesión</a>
+
+    <!-- Inform users with JavaScript disabled -->
+    <noscript>
+        <p class="noscript-banner" role="alert">
+            JavaScript está desactivado. Esta plataforma requiere JavaScript para funcionar.
+            Por favor, habilítelo en la configuración de su navegador.
+        </p>
+    </noscript>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         LOGIN CARD
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="main-content" role="main" aria-label="Inicio de sesión">
+
+        <section class="auth-container" aria-labelledby="login-heading">
+
+            <!-- Header -->
+            <header class="auth-header">
+                <h1 id="login-heading">📊 QC Projects Analytics</h1>
+                <p class="auth-subtitle">
+                    Plataforma centralizada de alta dirección para la supervisión
+                    y gestión de calidad operativa.
+                </p>
+            </header>
+
+            <!-- Institution badge -->
+            <div class="auth-institution" aria-label="Institución">
+                🔬 PsiNet-LAB — Acceso restringido
+            </div>
+
+            <!-- Login form -->
+            <form
+                id="login-form"
+                class="auth-form"
+                novalidate
+                aria-label="Formulario de inicio de sesión"
+            >
+                <div class="form-group">
+                    <label for="email">Correo institucional</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                        autocomplete="email"
+                        required
+                        placeholder="usuario@psinet-lab.org"
+                        aria-required="true"
+                        aria-describedby="email-hint"
+                    >
+                    <span id="email-hint" class="multiselect-hint">
+                        Utilice su correo @psinet-lab.org
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        autocomplete="current-password"
+                        required
+                        aria-required="true"
+                    >
+                </div>
+
+                <!-- Error message (hidden until auth fails) -->
+                <div
+                    id="login-error"
+                    class="form-error"
+                    role="alert"
+                    aria-live="polite"
+                    hidden
+                ></div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary btn-full"
+                    id="login-btn"
+                >
+                    <span id="btn-text">Iniciar sesión</span>
+                    <span id="btn-loading" hidden aria-hidden="true">Verificando…</span>
+                </button>
+            </form>
+
+            <footer class="auth-footer">
+                <p>Acceso exclusivo para miembros autorizados de PsiNet-LAB.</p>
+            </footer>
+
+        </section>
+
+    </main>
+
+    <!-- JavaScript modules (config and auth only — no app data needed here) -->
+    <script src="js/config.js"></script>
+    <script src="js/sha256.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        (function () {
+            'use strict';
+            /* Redirect to dashboard if a session is already active */
+            if (QC.Auth.isLoggedIn()) {
+                window.location.href = 'app.html';
+                return;
+            }
+            /* Wire the login form */
+            QC.Auth.initLoginForm();
+        }());
+    </script>
+
+</body>
+</html>

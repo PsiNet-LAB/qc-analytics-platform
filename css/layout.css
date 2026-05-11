@@ -1,0 +1,256 @@
+/* layout.css — Page structure: sidebar + main content.
+ * Single Responsibility: control the overall spatial arrangement.
+ * Progressive Enhancement: flex base layout, grid upgrade via @supports.
+ */
+
+/* ── Body base (flex column fallback) ───────────────────────────────── */
+body {
+    background-color: var(--clr-bg);
+    color: var(--clr-text);
+    font-family: var(--font-body);
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    transition: background-color var(--transition-med), color var(--transition-med);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+.sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background-color: var(--clr-card-bg);
+    border-right: 1px solid var(--clr-border);
+    padding: var(--space-lg);
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    gap: var(--space-md);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    overflow-y: auto;
+    transform: translateX(0);
+    transition:
+        transform var(--transition-med),
+        background-color var(--transition-med),
+        border-color var(--transition-med);
+}
+
+/* Collapsed state (mobile) */
+.sidebar--collapsed {
+    transform: translateX(calc(-1 * var(--sidebar-w)));
+}
+
+/* ── Main application wrapper ────────────────────────────────────────── */
+.app-layout {
+    margin-left: var(--sidebar-w);
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left var(--transition-med);
+}
+
+.app-layout--full {
+    margin-left: 0;
+}
+
+/* ── Application header ──────────────────────────────────────────────── */
+.app-header {
+    padding: var(--space-xl) var(--space-xl) var(--space-lg);
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    gap: var(--space-md);
+}
+
+.sidebar-toggle {
+    display: none;
+    font-size: 22px;
+    padding: var(--space-sm);
+    color: var(--clr-text);
+    background: none;
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+
+.app-header-title {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+/* ── Tab navigation ──────────────────────────────────────────────────── */
+.tab-nav {
+    padding: 0 var(--space-xl);
+    display: -ms-flexbox;
+    display: flex;
+    gap: var(--space-sm);
+    border-bottom: 1px solid var(--clr-border);
+}
+
+/* ── Main content area ───────────────────────────────────────────────── */
+main {
+    padding: var(--space-xl);
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+/* ── Two-column content grid ─────────────────────────────────────────── */
+.content-grid {
+    display: -ms-flexbox;
+    display: flex;
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.content-col {
+    -ms-flex: 1 1 300px;
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.content-col--wide {
+    -ms-flex: 2 1 500px;
+    flex: 2 1 500px;
+}
+
+/* ── Team assignment grid ────────────────────────────────────────────── */
+.team-assignment-grid {
+    display: -ms-flexbox;
+    display: flex;
+    gap: var(--space-lg);
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.team-assignment-grid > * {
+    -ms-flex: 1 1 260px;
+    flex: 1 1 260px;
+}
+
+/* ── Metrics grid ────────────────────────────────────────────────────── */
+.metrics-grid {
+    display: -ms-flexbox;
+    display: flex;
+    gap: var(--space-md);
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.metric-card {
+    -ms-flex: 1 1 180px;
+    flex: 1 1 180px;
+}
+
+/* Progressive enhancement: CSS Grid for larger viewports */
+@supports (display: grid) {
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        -ms-flex-wrap: unset;
+        flex-wrap: unset;
+    }
+
+    .team-assignment-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+/* ── Download section ────────────────────────────────────────────────── */
+.download-section {
+    margin: var(--space-lg) 0;
+}
+
+.section-divider {
+    border: none;
+    border-top: 1px solid var(--clr-border);
+    margin: var(--space-lg) 0;
+}
+
+/* ── Chart container ─────────────────────────────────────────────────── */
+.chart-container {
+    position: relative;
+    min-height: 320px;
+    max-height: 480px;
+}
+
+/* ── Overlay (sidebar backdrop on mobile) ────────────────────────────── */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 199;
+}
+
+.sidebar-overlay--visible {
+    display: block;
+}
+
+/* ── Responsive: hide sidebar on small screens ───────────────────────── */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(calc(-1 * var(--sidebar-w)));
+    }
+
+    .sidebar--open {
+        transform: translateX(0);
+    }
+
+    .app-layout {
+        margin-left: 0;
+    }
+
+    .sidebar-toggle {
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+    }
+
+    .content-grid,
+    .team-assignment-grid {
+        -ms-flex-direction: column;
+        flex-direction: column;
+    }
+
+    @supports (display: grid) {
+        .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .content-grid,
+        .team-assignment-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    main {
+        padding: var(--space-md);
+    }
+
+    .app-header {
+        padding: var(--space-md);
+    }
+
+    .tab-nav {
+        padding: 0 var(--space-md);
+    }
+}

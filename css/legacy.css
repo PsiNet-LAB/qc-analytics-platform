@@ -1,0 +1,155 @@
+/* legacy.css — Progressive-enhancement fallbacks for old browsers.
+ * Single Responsibility: provide static fallbacks when CSS features are absent.
+ *
+ * Strategy:
+ *  - browser-support.js adds class flags (no-css-vars, no-css-grid, etc.)
+ *    to <html> so CSS can target them here.
+ *  - @supports blocks upgrade styles for browsers that support the feature.
+ *  - Browsers that do NOT understand @supports also do NOT support the feature,
+ *    so they silently fall through to the base styles.
+ */
+
+/* ══════════════════════════════════════════════════════════════════════
+   1. CSS CUSTOM PROPERTIES FALLBACK
+   IE 11 and below do not support CSS variables.
+   The .no-css-vars class is added by browser-support.js.
+   ══════════════════════════════════════════════════════════════════════ */
+.no-css-vars body {
+    background-color: #F5F7FA;
+    color: #1A2332;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.no-css-vars .sidebar {
+    background-color: #FFFFFF;
+    border-right: 1px solid #D0D7DE;
+    width: 260px;
+}
+
+.no-css-vars .metric-card {
+    background-color: #FFFFFF;
+    border: 1px solid #D0D7DE;
+    border-radius: 16px;
+    padding: 20px 25px;
+}
+
+.no-css-vars .tab-btn {
+    background-color: #FFFFFF;
+    border: 1px solid #D0D7DE;
+    color: #5A6978;
+}
+
+.no-css-vars .tab-btn--active {
+    color: #0969DA;
+    font-weight: 600;
+}
+
+.no-css-vars .btn-primary {
+    background-color: #0969DA;
+    color: #FFFFFF;
+}
+
+.no-css-vars .form-control {
+    border: 1px solid #D0D7DE;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background-color: #FFFFFF;
+    color: #1A2332;
+}
+
+.no-css-vars .card,
+.no-css-vars .styled-section,
+.no-css-vars .auth-container {
+    background-color: #FFFFFF;
+    border: 1px solid #D0D7DE;
+    border-radius: 16px;
+}
+
+.no-css-vars .section-title {
+    color: #1A2332;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Dark theme is NOT supported in the no-css-vars context (IE), so we
+   keep the light palette as the only option for those browsers. */
+
+/* ══════════════════════════════════════════════════════════════════════
+   2. FLEXBOX FALLBACK (IE 9 and below)
+   .no-flexbox is added by browser-support.js when flex is absent.
+   Use block layout as the ultimate fallback.
+   ══════════════════════════════════════════════════════════════════════ */
+.no-flexbox .content-grid,
+.no-flexbox .metrics-grid,
+.no-flexbox .team-assignment-grid {
+    display: block;
+}
+
+.no-flexbox .metric-card,
+.no-flexbox .content-col {
+    display: inline-block;
+    vertical-align: top;
+    margin-bottom: 16px;
+    width: 48%;
+}
+
+.no-flexbox .sidebar {
+    float: left;
+    width: 260px;
+    min-height: 100vh;
+    position: relative;
+}
+
+.no-flexbox .app-layout {
+    margin-left: 260px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   3. CSS GRID FALLBACK
+   When grid is absent, we already have flex as a fallback via the base
+   layout.css — this block only fine-tunes display for .no-css-grid.
+   ══════════════════════════════════════════════════════════════════════ */
+.no-css-grid .metrics-grid {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   4. ANIMATION FALLBACK
+   Browsers that don't support animation get a static spinner border
+   styled to at least show progress visually.
+   ══════════════════════════════════════════════════════════════════════ */
+@supports not (animation: spin 0.8s linear infinite) {
+    .loading-spinner {
+        border: 3px solid #0969DA; /* static accent ring instead of spinning */
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   5. STICKY THEAD FALLBACK
+   position: sticky on <thead> is not supported in IE 11.
+   The table still works; it just won't have a frozen header.
+   No extra CSS needed — the base styles degrade gracefully.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════
+   6. FOCUS-VISIBLE FALLBACK
+   Older browsers show focus outlines on all clicks.
+   :focus-visible is progressive; fallback to :focus for accessibility.
+   ══════════════════════════════════════════════════════════════════════ */
+@supports not selector(:focus-visible) {
+    .btn:focus,
+    .tab-btn:focus,
+    .form-control:focus,
+    .skip-link:focus {
+        outline: 2px solid #0969DA;
+        outline-offset: 2px;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   7. SCROLL-BEHAVIOUR FALLBACK
+   Browsers without smooth scrolling still scroll, just instantly.
+   (No extra CSS needed — @supports check is informational only.)
+   ══════════════════════════════════════════════════════════════════════ */
