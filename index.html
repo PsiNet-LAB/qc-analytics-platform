@@ -19,10 +19,21 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/hero.css">
     <link rel="stylesheet" href="css/legacy.css">
 </head>
 
 <body class="theme-light auth-page">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         HERO BACKGROUND — parallax layers (purely decorative)
+         ════════════════════════════════════════════════════════════════ -->
+    <div class="hero-bg" aria-hidden="true" id="hero-bg">
+        <div class="hero-layer hero-layer--orb-1"></div>
+        <div class="hero-layer hero-layer--orb-2"></div>
+        <div class="hero-layer hero-layer--orb-3"></div>
+        <div class="hero-layer hero-layer--grid"></div>
+    </div>
 
     <!-- Accessibility: skip directly to the login form -->
     <a class="skip-link" href="#login-form">Ir al formulario de inicio de sesión</a>
@@ -42,9 +53,25 @@
 
         <section class="auth-container" aria-labelledby="login-heading">
 
+            <!-- Brand icon -->
+            <div class="auth-brand" aria-hidden="true">
+                <div class="auth-brand-icon">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none"
+                         aria-hidden="true" focusable="false"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1"  y="16" width="6" height="10" rx="2"
+                              fill="white" opacity="0.90"/>
+                        <rect x="10" y="10" width="6" height="16" rx="2"
+                              fill="white"/>
+                        <rect x="19" y="2"  width="6" height="24" rx="2"
+                              fill="white" opacity="0.80"/>
+                    </svg>
+                </div>
+            </div>
+
             <!-- Header -->
             <header class="auth-header">
-                <h1 id="login-heading">📊 QC Projects Analytics</h1>
+                <h1 id="login-heading">QC Projects Analytics</h1>
                 <p class="auth-subtitle">
                     Plataforma centralizada de alta dirección para la supervisión
                     y gestión de calidad operativa.
@@ -53,7 +80,7 @@
 
             <!-- Institution badge -->
             <div class="auth-institution" aria-label="Institución">
-                🔬 PsiNet-LAB — Consulta pública con edición restringida
+                🔬 PsiNet-LAB — Consulta pública · Edición restringida
             </div>
 
             <!-- Login form -->
@@ -133,6 +160,9 @@
     <script src="js/config.js"></script>
     <script src="js/sha256.js"></script>
     <script src="js/auth.js"></script>
+
+    <!-- Parallax effect for the hero background -->
+    <script src="js/parallax.js"></script>
 
     <script>
         (function () {

@@ -1,0 +1,130 @@
+/* hero.css — Hero section visuals and parallax layers.
+ * Single Responsibility: the full-viewport branded hero background
+ * and its layered parallax elements used on the login page.
+ *
+ * Progressive Enhancement:
+ *   - Gradient background always present (no feature queries required).
+ *   - Orb float animations added via @supports + prefers-reduced-motion.
+ *   - Parallax displacement is applied by parallax.js when rAF is available.
+ */
+
+/* ── Hero wrapper (fixed, behind auth card) ──────────────────────────── */
+.hero-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: var(--gradient-hero,
+        linear-gradient(135deg, #0B0F2A 0%, #1E1B4B 45%, #082032 100%));
+    overflow: hidden;
+}
+
+/* ── Dot-grid overlay ────────────────────────────────────────────────── */
+.hero-layer--grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+}
+
+/* ── Glowing orbs (shared base) ──────────────────────────────────────── */
+.hero-layer {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.hero-layer--orb-1 {
+    width: 680px;
+    height: 680px;
+    background: radial-gradient(
+        circle at center,
+        rgba(79, 70, 229, 0.52) 0%,
+        rgba(79, 70, 229, 0.12) 45%,
+        transparent 70%
+    );
+    top: -260px;
+    left: -180px;
+    filter: blur(40px);
+}
+
+.hero-layer--orb-2 {
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(
+        circle at center,
+        rgba(14, 165, 233, 0.48) 0%,
+        rgba(14, 165, 233, 0.10) 45%,
+        transparent 70%
+    );
+    bottom: -160px;
+    right: -120px;
+    filter: blur(50px);
+}
+
+.hero-layer--orb-3 {
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(
+        circle at center,
+        rgba(16, 185, 129, 0.36) 0%,
+        rgba(16, 185, 129, 0.06) 45%,
+        transparent 70%
+    );
+    top: 38%;
+    left: 28%;
+    filter: blur(60px);
+}
+
+/* ── Ambient float animations (decorative) ───────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation: none) {
+        .hero-layer--orb-1 { animation: orb-float-a  9s ease-in-out infinite; }
+        .hero-layer--orb-2 { animation: orb-float-b 12s ease-in-out infinite; }
+        .hero-layer--orb-3 { animation: orb-float-c  7s ease-in-out infinite; }
+
+        @keyframes orb-float-a {
+            0%, 100% { transform: translate(0px,   0px)  scale(1.00); }
+            33%       { transform: translate(44px,  28px) scale(1.04); }
+            66%       { transform: translate(-22px, 52px) scale(0.97); }
+        }
+
+        @keyframes orb-float-b {
+            0%, 100% { transform: translate(0px,   0px)   scale(1.00); }
+            50%       { transform: translate(-52px, -38px) scale(1.06); }
+        }
+
+        @keyframes orb-float-c {
+            0%, 100% { transform: translate(0px,   0px)   scale(1.00); }
+            40%       { transform: translate(28px,  -32px) scale(1.08); }
+            80%       { transform: translate(-24px,  18px) scale(0.95); }
+        }
+    }
+}
+
+/* ── Auth page z-index context ───────────────────────────────────────── */
+body.auth-page main,
+body.auth-page .auth-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Responsive: scale down large orbs on small screens ─────────────── */
+@media (max-width: 600px) {
+    .hero-layer--orb-1 {
+        width: 400px;
+        height: 400px;
+    }
+
+    .hero-layer--orb-2 {
+        width: 320px;
+        height: 320px;
+    }
+
+    .hero-layer--orb-3 {
+        width: 240px;
+        height: 240px;
+    }
+}

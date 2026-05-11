@@ -15,59 +15,73 @@
    The .no-css-vars class is added by browser-support.js.
    ══════════════════════════════════════════════════════════════════════ */
 .no-css-vars body {
-    background-color: #F5F7FA;
-    color: #1A2332;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #EEF2FF;
+    color: #0F172A;
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .no-css-vars .sidebar {
-    background-color: #FFFFFF;
-    border-right: 1px solid #D0D7DE;
-    width: 260px;
+    background-color: #161B35;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    width: 272px;
+}
+
+.no-css-vars .sidebar .sidebar-title,
+.no-css-vars .sidebar .sidebar-legend,
+.no-css-vars .sidebar .sidebar-radio {
+    color: #E2E8F0;
 }
 
 .no-css-vars .metric-card {
     background-color: #FFFFFF;
-    border: 1px solid #D0D7DE;
-    border-radius: 16px;
-    padding: 20px 25px;
+    border: 1px solid #CBD5E1;
+    border-top: 3px solid #4F46E5;
+    border-radius: 14px;
+    padding: 22px 26px;
 }
 
 .no-css-vars .tab-btn {
-    background-color: #FFFFFF;
-    border: 1px solid #D0D7DE;
-    color: #5A6978;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #64748B;
 }
 
 .no-css-vars .tab-btn--active {
-    color: #0969DA;
+    color: #4F46E5;
+    border-bottom-color: #4F46E5;
     font-weight: 600;
 }
 
 .no-css-vars .btn-primary {
-    background-color: #0969DA;
+    background-color: #4F46E5;
     color: #FFFFFF;
 }
 
 .no-css-vars .form-control {
-    border: 1px solid #D0D7DE;
+    border: 1px solid #CBD5E1;
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 10px 13px;
     background-color: #FFFFFF;
-    color: #1A2332;
+    color: #0F172A;
 }
 
 .no-css-vars .card,
 .no-css-vars .styled-section,
 .no-css-vars .auth-container {
     background-color: #FFFFFF;
-    border: 1px solid #D0D7DE;
-    border-radius: 16px;
+    border: 1px solid #CBD5E1;
+    border-radius: 14px;
 }
 
 .no-css-vars .section-title {
-    color: #1A2332;
+    color: #0F172A;
     font-family: 'Montserrat', sans-serif;
+}
+
+.no-css-vars .app-header {
+    background-color: #F8FAFF;
+    border-bottom: 1px solid #CBD5E1;
 }
 
 /* Dark theme is NOT supported in the no-css-vars context (IE), so we
@@ -94,13 +108,13 @@
 
 .no-flexbox .sidebar {
     float: left;
-    width: 260px;
+    width: 272px;
     min-height: 100vh;
     position: relative;
 }
 
 .no-flexbox .app-layout {
-    margin-left: 260px;
+    margin-left: 272px;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -122,19 +136,26 @@
    ══════════════════════════════════════════════════════════════════════ */
 @supports not (animation: spin 0.8s linear infinite) {
     .loading-spinner {
-        border: 3px solid #0969DA; /* static accent ring instead of spinning */
+        border: 3px solid #4F46E5; /* static accent ring instead of spinning */
     }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   5. STICKY THEAD FALLBACK
+   5. PARALLAX / RAF FALLBACK
+   When requestAnimationFrame is absent (.no-raf), parallax.js bails out
+   silently. The CSS float animations in hero.css remain active, so the
+   orbs still gently drift — no extra CSS needed.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════
+   6. STICKY THEAD FALLBACK
    position: sticky on <thead> is not supported in IE 11.
    The table still works; it just won't have a frozen header.
    No extra CSS needed — the base styles degrade gracefully.
    ══════════════════════════════════════════════════════════════════════ */
 
 /* ══════════════════════════════════════════════════════════════════════
-   6. FOCUS-VISIBLE FALLBACK
+   7. FOCUS-VISIBLE FALLBACK
    Older browsers show focus outlines on all clicks.
    :focus-visible is progressive; fallback to :focus for accessibility.
    ══════════════════════════════════════════════════════════════════════ */
@@ -143,13 +164,25 @@
     .tab-btn:focus,
     .form-control:focus,
     .skip-link:focus {
-        outline: 2px solid #0969DA;
+        outline: 2px solid #4F46E5;
         outline-offset: 2px;
     }
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   7. SCROLL-BEHAVIOUR FALLBACK
+   8. BACKDROP-FILTER FALLBACK
+   Browsers without backdrop-filter (IE, older Firefox) get a solid
+   semi-transparent background on elements that rely on blur glazing.
+   ══════════════════════════════════════════════════════════════════════ */
+@supports not (backdrop-filter: blur(1px)) {
+    /* Auth container falls back to a semi-opaque dark card */
+    .auth-container {
+        background-color: rgba(8, 12, 32, 0.88);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   9. SCROLL-BEHAVIOUR FALLBACK
    Browsers without smooth scrolling still scroll, just instantly.
    (No extra CSS needed — @supports check is informational only.)
    ══════════════════════════════════════════════════════════════════════ */

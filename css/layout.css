@@ -15,12 +15,31 @@ body {
     transition: background-color var(--transition-med), color var(--transition-med);
 }
 
-/* ── Sidebar ─────────────────────────────────────────────────────────── */
+/* ── Sidebar — always-dark premium navigation panel ─────────────────── */
+/*
+ * The sidebar overrides CSS custom properties within its own scope,
+ * creating a permanently dark panel regardless of the active page theme.
+ * All child components (.sidebar-title, .btn-secondary, etc.) that use
+ * these variables automatically render with the dark palette.
+ */
 .sidebar {
+    /* Scoped dark-palette tokens */
+    --clr-text:           #E2E8F0;
+    --clr-subtext:        #94A3B8;
+    --clr-border:         #2A3653;
+    --clr-bg:             #0F1628;
+    --clr-bg-alt:         #0F1628;
+    --clr-card-bg:        rgba(255, 255, 255, 0.04);
+    --clr-card-bg-solid:  #0B1020;
+    --clr-shadow:         rgba(0, 0, 0, 0.45);
+    --clr-input-bg:       rgba(255, 255, 255, 0.06);
+    --clr-accent:         #818CF8;
+    --clr-accent-hover:   #A5B4FC;
+
     width: var(--sidebar-w);
     min-height: 100vh;
-    background-color: var(--clr-card-bg);
-    border-right: 1px solid var(--clr-border);
+    background: linear-gradient(180deg, #161B35 0%, #0B1020 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
     padding: var(--space-lg);
     display: -ms-flexbox;
     display: flex;
@@ -35,9 +54,21 @@ body {
     overflow-y: auto;
     transform: translateX(0);
     transition:
-        transform var(--transition-med),
-        background-color var(--transition-med),
-        border-color var(--transition-med);
+        transform var(--transition-med);
+}
+
+/* Gradient accent strip at the very top */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-accent,
+        linear-gradient(90deg, #4F46E5 0%, #0EA5E9 100%));
+    z-index: 1;
+    pointer-events: none;
 }
 
 /* Collapsed state (mobile) */
@@ -67,9 +98,25 @@ body {
     padding: var(--space-xl) var(--space-xl) var(--space-lg);
     display: -ms-flexbox;
     display: flex;
-    -ms-flex-align: start;
-    align-items: flex-start;
+    -ms-flex-align: center;
+    align-items: center;
     gap: var(--space-md);
+    background-color: var(--clr-bg-alt, var(--clr-bg));
+    border-bottom: 1px solid var(--clr-border);
+    position: relative;
+}
+
+/* Thin accent underline on the header */
+.app-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: var(--space-xl);
+    width: 100px;
+    height: 2px;
+    background: var(--gradient-accent,
+        linear-gradient(90deg, #4F46E5 0%, #0EA5E9 100%));
+    border-radius: var(--radius-pill);
 }
 
 .sidebar-toggle {
@@ -83,6 +130,11 @@ body {
     cursor: pointer;
     -ms-flex-negative: 0;
     flex-shrink: 0;
+    transition: background-color var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+    background-color: var(--clr-bg-alt, var(--clr-bg));
 }
 
 .app-header-title {
@@ -95,8 +147,9 @@ body {
     padding: 0 var(--space-xl);
     display: -ms-flexbox;
     display: flex;
-    gap: var(--space-sm);
-    border-bottom: 1px solid var(--clr-border);
+    gap: 0;
+    border-bottom: 2px solid var(--clr-border);
+    background-color: var(--clr-bg-alt, var(--clr-bg));
 }
 
 /* ── Main content area ───────────────────────────────────────────────── */
@@ -148,6 +201,7 @@ main {
     gap: var(--space-md);
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+    margin-bottom: var(--space-lg);
 }
 
 .metric-card {
@@ -198,7 +252,7 @@ main {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.55);
     z-index: 199;
 }
 
@@ -252,5 +306,7 @@ main {
 
     .tab-nav {
         padding: 0 var(--space-md);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
