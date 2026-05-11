@@ -18,6 +18,12 @@ QC.Config = (function () {
      * Default credentials:
      *   angel.garcia@psinet-lab.org  →  Angel2026@QC
      *   dennis.calle@psinet-lab.org  →  Dennis2026@QC
+     *
+     * ARCHITECTURE NOTE: This is a static GitHub Pages site with no server.
+     * Authentication happens entirely in the browser. Hash values are visible
+     * to anyone who inspects the repository. This design is appropriate for a
+     * small trusted team. For sensitive data, migrate to a backend auth service
+     * (e.g. Firebase Auth, Supabase). See README.md § Limitaciones conocidas.
      * ────────────────────────────────────────────────────────────────── */
     var USERS = [
         {

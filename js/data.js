@@ -5,6 +5,13 @@
  *
  * Depends on: QC.Config.
  * Storage format: JSON array of row objects keyed by CSV column names.
+ *
+ * ARCHITECTURE NOTE: Because this site is hosted on GitHub Pages (static),
+ * data edits are stored in each user's browser localStorage only. Changes
+ * made by one team member are NOT automatically visible to others. To share
+ * edits, users must export the updated CSV (download button) and commit it
+ * to the repository. For real-time collaboration, consider integrating a
+ * cloud database service. See README.md § Limitaciones conocidas.
  */
 
 /* global QC */
