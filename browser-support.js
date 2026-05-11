@@ -10,6 +10,13 @@
  *
  * This file intentionally uses only ES5 syntax so it can run in IE 9+
  * without any transpilation step.
+ *
+ * Extended for the native HTML/CSS/JS platform migration:
+ *   - Promise polyfill (IE 11 and below)
+ *   - Fetch polyfill hint
+ *   - Element.classList shim for IE 9
+ *   - sessionStorage / localStorage availability check
+ *   - JSON availability check (IE 7 and below)
  */
 
 /* jshint esversion: 5 */
@@ -188,7 +195,7 @@
     }
 
     // ------------------------------------------------------------------
-    // 11. Fetch API detection
+    // 11. Fetch API detection and minimal polyfill hint
     // ------------------------------------------------------------------
     if (typeof root.fetch === 'undefined') {
         addHtmlClass('no-fetch');
@@ -198,6 +205,29 @@
                 'Add a Fetch polyfill (e.g. whatwg-fetch) if needed.'
             );
         }
+
+        // Minimal XMLHttpRequest-based fetch shim for GET text/JSON requests.
+        // Covers the single use-case in data.js: fetch(csvUrl) → response.text().
+        root.fetch = function fetch(url) {
+            return new root.Promise(function (resolve, reject) {
+                var xhr = new root.XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve({
+                            ok:   true,
+                            status: xhr.status,
+                            text: function () { return root.Promise.resolve(xhr.responseText); },
+                            json: function () { return root.Promise.resolve(JSON.parse(xhr.responseText)); }
+                        });
+                    } else {
+                        reject(new Error('HTTP ' + xhr.status));
+                    }
+                };
+                xhr.onerror = function () { reject(new Error('Network error')); };
+                xhr.send();
+            });
+        };
     }
 
     // ------------------------------------------------------------------
@@ -205,6 +235,157 @@
     // ------------------------------------------------------------------
     if (typeof root.IntersectionObserver === 'undefined') {
         addHtmlClass('no-intersection-observer');
+    }
+
+    // ------------------------------------------------------------------
+    // 13. Element.classList shim for IE 9 (does not support classList)
+    // ------------------------------------------------------------------
+    if (typeof doc.createElement('div').classList === 'undefined') {
+        addHtmlClass('no-classlist');
+        // Minimal classList shim
+        var classListShim = {
+            add: function (el, cls) {
+                if ((' ' + el.className + ' ').indexOf(' ' + cls + ' ') === -1) {
+                    el.className += (el.className ? ' ' : '') + cls;
+                }
+            },
+            remove: function (el, cls) {
+                el.className = (' ' + el.className + ' ')
+                    .replace(' ' + cls + ' ', ' ').trim();
+            },
+            contains: function (el, cls) {
+                return (' ' + el.className + ' ').indexOf(' ' + cls + ' ') !== -1;
+            },
+            toggle: function (el, cls) {
+                if (classListShim.contains(el, cls)) { classListShim.remove(el, cls); }
+                else { classListShim.add(el, cls); }
+            }
+        };
+        // Patch individual elements via defineProperty is complex in IE9;
+        // expose as root.classListShim for use by application scripts.
+        root.classListShim = classListShim;
+    }
+
+    // ------------------------------------------------------------------
+    // 14. sessionStorage / localStorage availability
+    // ------------------------------------------------------------------
+    (function () {
+        function testStorage(name) {
+            try {
+                var s = root[name];
+                s.setItem('__test__', '1');
+                s.removeItem('__test__');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        if (!testStorage('sessionStorage')) { addHtmlClass('no-session-storage'); }
+        if (!testStorage('localStorage'))   { addHtmlClass('no-local-storage'); }
+    }());
+
+    // ------------------------------------------------------------------
+    // 15. JSON availability (IE 7 and below)
+    // ------------------------------------------------------------------
+    if (typeof root.JSON === 'undefined') {
+        addHtmlClass('no-json');
+        if (typeof console !== 'undefined' && console.warn) {
+            console.warn(
+                '[browser-support] JSON is unavailable. ' +
+                'Add a JSON polyfill (e.g. json3) before application scripts.'
+            );
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // 16. Promise polyfill — minimal implementation for IE 11 and below.
+    //     Only installed when the native Promise is absent.
+    //     Covers the subset used by auth.js and data.js.
+    // ------------------------------------------------------------------
+    if (typeof root.Promise === 'undefined') {
+        addHtmlClass('no-promise');
+
+        root.Promise = (function () {
+            var PENDING  = 0;
+            var RESOLVED = 1;
+            var REJECTED = 2;
+
+            function Promise(executor) {
+                var self      = this;
+                self._state   = PENDING;
+                self._value   = undefined;
+                self._deferreds = [];
+
+                function resolve(val) {
+                    if (self._state !== PENDING) { return; }
+                    self._state = RESOLVED;
+                    self._value = val;
+                    _finale(self);
+                }
+                function reject(reason) {
+                    if (self._state !== PENDING) { return; }
+                    self._state = REJECTED;
+                    self._value = reason;
+                    _finale(self);
+                }
+
+                try { executor(resolve, reject); }
+                catch (e) { reject(e); }
+            }
+
+            function _finale(self) {
+                for (var i = 0; i < self._deferreds.length; i++) {
+                    _handle(self, self._deferreds[i]);
+                }
+                self._deferreds = null;
+            }
+
+            function _handle(self, deferred) {
+                if (self._state === PENDING) {
+                    self._deferreds.push(deferred);
+                    return;
+                }
+                setTimeout(function () {
+                    var cb = self._state === RESOLVED ? deferred.onFulfilled : deferred.onRejected;
+                    if (!cb) {
+                        if (self._state === RESOLVED) { deferred.resolve(self._value); }
+                        else { deferred.reject(self._value); }
+                        return;
+                    }
+                    try {
+                        deferred.resolve(cb(self._value));
+                    } catch (e) {
+                        deferred.reject(e);
+                    }
+                }, 0);
+            }
+
+            Promise.prototype['then'] = function (onFulfilled, onRejected) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    _handle(self, {
+                        onFulfilled: typeof onFulfilled === 'function' ? onFulfilled : null,
+                        onRejected:  typeof onRejected  === 'function' ? onRejected  : null,
+                        resolve: resolve,
+                        reject:  reject
+                    });
+                });
+            };
+
+            Promise.prototype['catch'] = function (onRejected) {
+                return this['then'](null, onRejected);
+            };
+
+            Promise.resolve = function (val) {
+                return new Promise(function (res) { res(val); });
+            };
+
+            Promise.reject = function (reason) {
+                return new Promise(function (res, rej) { rej(reason); });
+            };
+
+            return Promise;
+        }());
     }
 
     // ------------------------------------------------------------------
@@ -217,7 +398,10 @@
             cssFlexbox: hasFlexbox,
             promise: typeof root.Promise !== 'undefined',
             fetch: typeof root.fetch !== 'undefined',
-            intersectionObserver: typeof root.IntersectionObserver !== 'undefined'
+            intersectionObserver: typeof root.IntersectionObserver !== 'undefined',
+            sessionStorage: typeof root.sessionStorage !== 'undefined',
+            localStorage: typeof root.localStorage !== 'undefined',
+            json: typeof root.JSON !== 'undefined'
         });
     }
 

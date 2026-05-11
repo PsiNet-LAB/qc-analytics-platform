@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma Analítica QC — Panel centralizado de supervisión y gestión de calidad operativa.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>QC Projects Analytics — Panel Operativo</title>
+
+    <!-- Legacy-browser support: polyfills and feature-detection flags. -->
+    <script src="browser-support.js"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="stylesheet" href="css/legacy.css">
+
+    <!--
+        Chart.js 2.9.4 — supports IE 11 and all modern browsers.
+        Loaded synchronously so it is available when charts.js executes.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+</head>
+
+<body class="theme-light">
+
+    <!-- Accessibility: skip directly to the main content area -->
+    <a class="skip-link" href="#main-content">Ir al contenido principal</a>
+
+    <!-- Inform users with JavaScript disabled -->
+    <noscript>
+        <p class="noscript-banner" role="alert">
+            JavaScript está desactivado. Esta plataforma requiere JavaScript.
+            Por favor, habilítelo en la configuración de su navegador.
+        </p>
+    </noscript>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SIDEBAR
+         ════════════════════════════════════════════════════════════════ -->
+    <aside
+        id="sidebar"
+        class="sidebar"
+        role="complementary"
+        aria-label="Panel lateral de navegación"
+    >
+        <header class="sidebar-header">
+            <h2 class="sidebar-title">📊 QC Projects Analytics</h2>
+        </header>
+
+        <hr class="sidebar-divider">
+
+        <!-- Theme selector -->
+        <fieldset class="sidebar-fieldset">
+            <legend class="sidebar-legend">Visualización</legend>
+
+            <label class="sidebar-radio">
+                <input type="radio" name="theme" value="light" checked>
+                Claro Minimalista
+            </label>
+            <label class="sidebar-radio">
+                <input type="radio" name="theme" value="dark">
+                Oscuro Sofisticado
+            </label>
+        </fieldset>
+
+        <hr class="sidebar-divider">
+
+        <!-- Logged-in user card -->
+        <div class="sidebar-user" id="sidebar-user" aria-label="Usuario actual">
+            <p class="sidebar-user__name" id="sidebar-user-name">—</p>
+            <p class="sidebar-user__email" id="sidebar-user-email">—</p>
+        </div>
+
+        <button
+            class="btn btn-secondary btn-full"
+            id="logout-btn"
+            type="button"
+            aria-label="Cerrar sesión"
+        >
+            Cerrar sesión
+        </button>
+    </aside>
+
+    <!-- Mobile sidebar backdrop -->
+    <div
+        class="sidebar-overlay"
+        id="sidebar-overlay"
+        role="presentation"
+        aria-hidden="true"
+    ></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN APPLICATION LAYOUT
+         ════════════════════════════════════════════════════════════════ -->
+    <div class="app-layout" id="app-layout">
+
+        <!-- App header -->
+        <header class="app-header" role="banner">
+            <button
+                class="sidebar-toggle"
+                id="sidebar-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="sidebar"
+                aria-label="Abrir menú lateral"
+            >☰</button>
+
+            <div class="app-header-title">
+                <h1 class="app-title">📊 QC Projects Analytics</h1>
+                <p class="app-subtitle">
+                    Plataforma centralizada de alta dirección para la supervisión
+                    y gestión de calidad operativa.
+                </p>
+            </div>
+        </header>
+
+        <!-- ── Tab navigation ─────────────────────────────────────── -->
+        <nav class="tab-nav" role="tablist" aria-label="Secciones de la plataforma">
+            <button
+                class="tab-btn tab-btn--active"
+                id="tab-general-btn"
+                role="tab"
+                aria-selected="true"
+                aria-controls="tab-general"
+                data-tab="general"
+            >
+                📊 Panel Operativo de Proyectos
+            </button>
+            <button
+                class="tab-btn"
+                id="tab-profiles-btn"
+                role="tab"
+                aria-selected="false"
+                aria-controls="tab-profiles"
+                data-tab="profiles"
+            >
+                👤 Perfil de Investigador
+            </button>
+        </nav>
+
+        <!-- ── Main content ───────────────────────────────────────── -->
+        <main id="main-content" role="main" aria-label="Contenido principal">
+
+            <!-- ══════════════════════════════════════════════════════
+                 TAB 1 — PANEL OPERATIVO DE PROYECTOS
+                 ══════════════════════════════════════════════════════ -->
+            <section
+                id="tab-general"
+                class="tab-panel"
+                role="tabpanel"
+                aria-labelledby="tab-general-btn"
+            >
+
+                <!-- KPI metrics -->
+                <div
+                    id="metrics-grid"
+                    class="metrics-grid"
+                    role="region"
+                    aria-label="Métricas clave de rendimiento"
+                ></div>
+
+                <!-- Chart + Edit table -->
+                <div class="content-grid">
+
+                    <!-- Left: Convergencia Operativa chart -->
+                    <div class="content-col">
+                        <h3 class="section-title">Convergencia Operativa</h3>
+                        <div class="chart-container card">
+                            <canvas
+                                id="progress-chart"
+                                role="img"
+                                aria-label="Gráfico de barras horizontales: progreso de proyectos por estado"
+                            ></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Right: Inline-edit data table -->
+                    <div class="content-col content-col--wide">
+                        <h3 class="section-title">Registro de Modificaciones en Tiempo Real</h3>
+                        <div id="edit-table-container"></div>
+                    </div>
+
+                </div><!-- /.content-grid -->
+
+                <!-- Download button -->
+                <div class="download-section">
+                    <button
+                        class="btn btn-primary"
+                        id="download-btn"
+                        type="button"
+                        aria-label="Descargar la matriz actualizada en formato CSV"
+                    >
+                        📥 Descargar Matriz Actualizada
+                    </button>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- Team assignment -->
+                <section
+                    class="styled-section"
+                    id="team-assignment"
+                    aria-labelledby="team-assignment-title"
+                >
+                    <h3 class="section-title" id="team-assignment-title">
+                        Gestión de Equipos de Asignación
+                    </h3>
+
+                    <div class="team-assignment-grid">
+
+                        <!-- Project selector (left column) -->
+                        <div class="form-group">
+                            <label for="project-select">Seleccionar instrumento</label>
+                            <select
+                                id="project-select"
+                                class="form-control"
+                                aria-label="Instrumento / proyecto"
+                            ></select>
+                        </div>
+
+                        <!-- Author management (right column) -->
+                        <div>
+                            <div class="form-group">
+                                <label for="new-author-input">
+                                    Añadir investigador no listado
+                                </label>
+                                <input
+                                    type="text"
+                                    id="new-author-input"
+                                    class="form-control"
+                                    placeholder="Nombre completo del investigador"
+                                    aria-label="Nombre del nuevo investigador"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="authors-multiselect">
+                                    Investigadores asignados al QC
+                                </label>
+                                <select
+                                    id="authors-multiselect"
+                                    class="form-control"
+                                    multiple
+                                    size="6"
+                                    aria-label="Seleccione uno o más investigadores (Ctrl+clic para múltiple selección)"
+                                ></select>
+                                <span class="multiselect-hint" id="multiselect-hint">
+                                    Use Ctrl+clic (Windows) o ⌘+clic (Mac) para selección múltiple.
+                                </span>
+                            </div>
+
+                            <button
+                                class="btn btn-primary"
+                                id="update-team-btn"
+                                type="button"
+                            >
+                                Actualizar Matriz de Equipo
+                            </button>
+                        </div>
+
+                    </div><!-- /.team-assignment-grid -->
+                </section>
+
+            </section><!-- /#tab-general -->
+
+            <!-- ══════════════════════════════════════════════════════
+                 TAB 2 — PERFIL DE INVESTIGADOR
+                 ══════════════════════════════════════════════════════ -->
+            <section
+                id="tab-profiles"
+                class="tab-panel tab-panel--hidden"
+                role="tabpanel"
+                aria-labelledby="tab-profiles-btn"
+                hidden
+            >
+
+                <section
+                    class="styled-section"
+                    aria-labelledby="profiles-title"
+                >
+                    <h3 class="section-title" id="profiles-title">
+                        Análisis de Rendimiento Individual
+                    </h3>
+
+                    <div class="form-group">
+                        <label for="researcher-select">
+                            Buscar investigador en la matriz académica
+                        </label>
+                        <select
+                            id="researcher-select"
+                            class="form-control"
+                            aria-label="Seleccionar investigador"
+                            style="max-width: 420px;"
+                        >
+                            <option value="">— Seleccione un investigador —</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- KPI cards for selected researcher -->
+                <div id="researcher-metrics" hidden></div>
+
+                <!-- Detail table for selected researcher -->
+                <div class="card" id="researcher-table" hidden></div>
+
+            </section><!-- /#tab-profiles -->
+
+        </main><!-- /#main-content -->
+
+    </div><!-- /.app-layout -->
+
+    <!-- ════════════════════════════════════════════════════════════════
+         LOADING OVERLAY — displayed while CSV data is fetched
+         ════════════════════════════════════════════════════════════════ -->
+    <div
+        id="loading-overlay"
+        class="loading-overlay"
+        role="status"
+        aria-live="polite"
+        aria-label="Cargando plataforma"
+    >
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p class="loading-text">Cargando datos…</p>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         TOAST NOTIFICATION
+         ════════════════════════════════════════════════════════════════ -->
+    <div
+        id="toast"
+        class="toast"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         JAVASCRIPT MODULES  (loaded in dependency order)
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="js/config.js"></script>
+    <script src="js/sha256.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/tabs/general.js"></script>
+    <script src="js/tabs/profiles.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

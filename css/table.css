@@ -1,0 +1,120 @@
+/* table.css — Inline-edit data table.
+ * Single Responsibility: style the project data matrix and its editable cells.
+ */
+
+/* ── Table wrapper ───────────────────────────────────────────────────── */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--clr-border);
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+/* ── Base table ──────────────────────────────────────────────────────── */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background-color: var(--clr-card-bg);
+}
+
+.data-table thead {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--clr-card-bg);
+}
+
+.data-table th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--clr-subtext);
+    border-bottom: 2px solid var(--clr-border);
+    white-space: nowrap;
+    background-color: var(--clr-card-bg);
+}
+
+.data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--clr-bg);
+}
+
+/* Read-only cell */
+.td-readonly {
+    color: var(--clr-subtext);
+    white-space: nowrap;
+}
+
+/* ── Editable cell inputs ────────────────────────────────────────────── */
+.td-select,
+.td-input,
+.td-number {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--clr-text);
+    font-size: 13px;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.td-select:hover,
+.td-input:hover,
+.td-number:hover {
+    border-color: var(--clr-border);
+    background-color: var(--clr-bg);
+}
+
+.td-select:focus,
+.td-input:focus,
+.td-number:focus {
+    outline: none;
+    border-color: var(--clr-accent);
+    background-color: var(--clr-input-bg);
+    box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.15);
+}
+
+.td-select {
+    cursor: pointer;
+    min-width: 130px;
+}
+
+.td-number {
+    max-width: 80px;
+}
+
+.td-input {
+    min-width: 180px;
+}
+
+/* ── Researcher profile table ────────────────────────────────────────── */
+.profile-table {
+    font-size: 13px;
+}
+
+.profile-table .progress-cell {
+    min-width: 120px;
+}
+
+/* ── Highlight modified rows ─────────────────────────────────────────── */
+.data-table tbody tr.row--modified {
+    background-color: rgba(9, 105, 218, 0.06);
+}
