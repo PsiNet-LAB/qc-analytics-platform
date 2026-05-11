@@ -99,7 +99,7 @@
         // gamma: left/right tilt, range [-90, 90]
         // beta:  front/back tilt — clamp to a comfortable [-45, 45] range
         targetX =  (e.gamma / 90);
-        targetY =  (Math.max(-45, Math.min(45, e.beta)) / 45) * 0.5;
+        targetY =  (Math.max(-45, Math.min(45, e.beta)) / 45);
     }
 
     // ── Animation loop ────────────────────────────────────────────────
