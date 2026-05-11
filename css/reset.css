@@ -62,10 +62,11 @@ ul, ol {
     left: 0;
     z-index: 9999;
     padding: 8px 16px;
-    background: #0969DA;
+    background: #4F46E5;
     color: #ffffff;
     font-size: 14px;
-    border-radius: 0 0 4px 0;
+    font-weight: 600;
+    border-radius: 0 0 6px 0;
     transition: top 0.2s ease;
 }
 
@@ -77,9 +78,10 @@ ul, ol {
 
 /* Noscript banner */
 .noscript-banner {
-    background-color: #FDE093;
-    color: #1A2332;
+    background-color: #FDE68A;
+    color: #0F172A;
     padding: 12px 20px;
     text-align: center;
     font-size: 14px;
+    font-weight: 500;
 }

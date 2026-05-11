@@ -4,30 +4,55 @@
  * values declared in legacy.css via the .no-css-vars class.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;600;700&display=swap');
 
 /* ── Light theme (default) ──────────────────────────────────────────── */
 :root {
-    --clr-bg:           #F5F7FA;
-    --clr-card-bg:      rgba(255, 255, 255, 0.95);
-    --clr-text:         #1A2332;
-    --clr-subtext:      #5A6978;
-    --clr-border:       #D0D7DE;
-    --clr-shadow:       rgba(31, 35, 40, 0.08);
-    --clr-accent:       #0969DA;
-    --clr-accent-hover: #0550AE;
-    --clr-danger:       #CF222E;
-    --clr-input-bg:     #FFFFFF;
+    /* Core palette */
+    --clr-bg:             #EEF2FF;
+    --clr-bg-alt:         #F8FAFF;
+    --clr-card-bg:        rgba(255, 255, 255, 0.95);
+    --clr-card-bg-solid:  #FFFFFF;
+    --clr-text:           #0F172A;
+    --clr-subtext:        #64748B;
+    --clr-border:         #CBD5E1;
+    --clr-border-focus:   rgba(79, 70, 229, 0.45);
+    --clr-shadow:         rgba(15, 23, 42, 0.10);
 
-    /* Status badge colours */
-    --clr-status-approved: #AEE1B1;
-    --clr-status-review:   #FDE093;
-    --clr-status-progress: #AEC6CF;
-    --clr-status-pending:  #E5E5E5;
+    /* Brand accent */
+    --clr-accent:         #4F46E5;
+    --clr-accent-hover:   #4338CA;
+    --clr-accent-rgb:     79, 70, 229;
+    --clr-accent-2:       #0EA5E9;
+    --clr-accent-2-rgb:   14, 165, 233;
+
+    /* Semantic colours */
+    --clr-success:        #10B981;
+    --clr-danger:         #EF4444;
+    --clr-warning:        #F59E0B;
+    --clr-input-bg:       #FFFFFF;
+
+    /* Status badges */
+    --clr-status-approved: #BBF7D0;
+    --clr-status-review:   #FDE68A;
+    --clr-status-progress: #BAE6FD;
+    --clr-status-pending:  #E2E8F0;
+
+    /* Gradients */
+    --gradient-hero:   linear-gradient(135deg, #0B0F2A 0%, #1E1B4B 45%, #082032 100%);
+    --gradient-accent: linear-gradient(135deg, #4F46E5 0%, #0EA5E9 100%);
+
+    /* Elevation shadows */
+    --shadow-xs:     0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow-sm:     0 2px 8px rgba(15, 23, 42, 0.08), 0 1px 4px rgba(15, 23, 42, 0.04);
+    --shadow-md:     0 4px 20px rgba(15, 23, 42, 0.10), 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-lg:     0 16px 48px rgba(15, 23, 42, 0.14), 0 8px 20px rgba(15, 23, 42, 0.06);
+    --shadow-accent: 0 8px 32px rgba(79, 70, 229, 0.28);
 
     /* Typography */
-    --font-body:    'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-body:    'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --font-heading: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-mono:    'SF Mono', 'Cascadia Code', 'Consolas', monospace;
 
     /* Spacing scale */
     --space-xs:  4px;
@@ -36,28 +61,49 @@
     --space-lg:  24px;
     --space-xl:  32px;
     --space-2xl: 48px;
+    --space-3xl: 64px;
 
     /* Border radii */
-    --radius-sm: 8px;
-    --radius-md: 16px;
+    --radius-xs:   4px;
+    --radius-sm:   8px;
+    --radius-md:   14px;
+    --radius-lg:   20px;
+    --radius-pill: 9999px;
 
     /* Sidebar width */
-    --sidebar-w: 260px;
+    --sidebar-w: 272px;
 
     /* Transitions */
-    --transition-fast: 0.2s ease;
-    --transition-med:  0.3s ease-in-out;
+    --transition-fast: 0.18s ease;
+    --transition-med:  0.30s ease;
+    --transition-slow: 0.50s ease;
 }
 
 /* ── Dark theme override ─────────────────────────────────────────────── */
 .theme-dark {
-    --clr-bg:           #121212;
-    --clr-card-bg:      rgba(30, 30, 30, 0.9);
-    --clr-text:         #ECECEC;
-    --clr-subtext:      #A0A0A0;
-    --clr-border:       #333333;
-    --clr-shadow:       rgba(0, 0, 0, 0.3);
-    --clr-accent:       #58A6FF;
-    --clr-accent-hover: #79B8FF;
-    --clr-input-bg:     #1E1E1E;
+    --clr-bg:             #080C18;
+    --clr-bg-alt:         #0D1226;
+    --clr-card-bg:        rgba(13, 18, 40, 0.95);
+    --clr-card-bg-solid:  #0D1226;
+    --clr-text:           #F1F5F9;
+    --clr-subtext:        #94A3B8;
+    --clr-border:         #1E2B47;
+    --clr-border-focus:   rgba(129, 140, 248, 0.45);
+    --clr-shadow:         rgba(0, 0, 0, 0.42);
+
+    --clr-accent:         #818CF8;
+    --clr-accent-hover:   #A5B4FC;
+    --clr-accent-rgb:     129, 140, 248;
+    --clr-accent-2:       #38BDF8;
+    --clr-accent-2-rgb:   56, 189, 248;
+
+    --clr-danger:         #F87171;
+    --clr-warning:        #FBB040;
+    --clr-input-bg:       #0D1530;
+
+    --shadow-xs:     0 1px 3px rgba(0, 0, 0, 0.18);
+    --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.24);
+    --shadow-md:     0 4px 20px rgba(0, 0, 0, 0.32);
+    --shadow-lg:     0 16px 48px rgba(0, 0, 0, 0.44);
+    --shadow-accent: 0 8px 32px rgba(129, 140, 248, 0.20);
 }

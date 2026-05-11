@@ -89,7 +89,7 @@
     outline: none;
     border-color: var(--clr-accent);
     background-color: var(--clr-input-bg);
-    box-shadow: 0 0 0 2px rgba(9, 105, 218, 0.15);
+    box-shadow: 0 0 0 2px rgba(var(--clr-accent-rgb, 79, 70, 229), 0.15);
 }
 
 .td-select {
@@ -116,5 +116,5 @@
 
 /* ── Highlight modified rows ─────────────────────────────────────────── */
 .data-table tbody tr.row--modified {
-    background-color: rgba(9, 105, 218, 0.06);
+    background-color: rgba(var(--clr-accent-rgb, 79, 70, 229), 0.05);
 }

@@ -238,6 +238,28 @@
     }
 
     // ------------------------------------------------------------------
+    // 12a. requestAnimationFrame detection and vendor-prefix shim.
+    //      Required by parallax.js; absent in IE 9 and some old Android.
+    // ------------------------------------------------------------------
+    root.requestAnimationFrame =
+        root.requestAnimationFrame       ||
+        root.webkitRequestAnimationFrame ||
+        root.mozRequestAnimationFrame    ||
+        root.msRequestAnimationFrame     ||
+        null;
+
+    root.cancelAnimationFrame =
+        root.cancelAnimationFrame       ||
+        root.webkitCancelAnimationFrame ||
+        root.mozCancelAnimationFrame    ||
+        root.msCancelAnimationFrame     ||
+        null;
+
+    if (typeof root.requestAnimationFrame !== 'function') {
+        addHtmlClass('no-raf');
+    }
+
+    // ------------------------------------------------------------------
     // 13. Element.classList shim for IE 9 (does not support classList)
     // ------------------------------------------------------------------
     if (typeof doc.createElement('div').classList === 'undefined') {
@@ -396,6 +418,7 @@
             cssCustomProperties: hasCSSVars,
             cssGrid: hasCSSGrid,
             cssFlexbox: hasFlexbox,
+            requestAnimationFrame: typeof root.requestAnimationFrame === 'function',
             promise: typeof root.Promise !== 'undefined',
             fetch: typeof root.fetch !== 'undefined',
             intersectionObserver: typeof root.IntersectionObserver !== 'undefined',
