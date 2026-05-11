@@ -7,14 +7,14 @@
  *   - CSV download button
  *   - Team assignment section
  *
- * Depends on: QC.Config, QC.Data, QC.Charts.
+ * Depends on: QC.Config, QC.Auth, QC.Data, QC.Charts.
  */
 
 /* global QC */
 var QC = QC || {};
 QC.Tabs = QC.Tabs || {};
 
-QC.Tabs.General = (function (Config, Data, Charts) {
+QC.Tabs.General = (function (Config, Auth, Data, Charts) {
     'use strict';
 
     /* ── Toast helper ─────────────────────────────────────────────────── */
@@ -87,12 +87,17 @@ QC.Tabs.General = (function (Config, Data, Charts) {
         var container = document.getElementById('edit-table-container');
         if (!container) { return; }
 
+        var canEdit = Auth.canEdit();
         var rows = Data.getRows();
 
         /* Build table */
         var html =
+            (canEdit ? '' :
+                '<p class="info-message">Está viendo la plataforma en modo lectura. Solo las cuentas autorizadas pueden editar la matriz.</p>') +
             '<div class="table-wrapper">' +
-            '<table class="data-table" aria-label="Registro de proyectos editable">' +
+            '<table class="data-table" aria-label="' +
+                (canEdit ? 'Registro de proyectos editable' : 'Registro de proyectos en modo lectura') +
+            '">' +
             '<thead><tr>' +
             '<th scope="col">Fecha</th>' +
             '<th scope="col">Horario</th>' +
@@ -105,7 +110,7 @@ QC.Tabs.General = (function (Config, Data, Charts) {
 
         for (var i = 0; i < rows.length; i++) {
             var r = rows[i];
-            html += _buildTableRow(r);
+            html += _buildTableRow(r, canEdit);
         }
 
         html += '</tbody></table></div>';
@@ -118,7 +123,7 @@ QC.Tabs.General = (function (Config, Data, Charts) {
         }
     }
 
-    function _buildTableRow(r) {
+    function _buildTableRow(r, canEdit) {
         var id      = r._id;
         var fecha   = _esc(r['Fecha']   || '');
         var horario = _esc(r['Horario'] || '');
@@ -126,6 +131,18 @@ QC.Tabs.General = (function (Config, Data, Charts) {
         var estado  = r['Estado'] || 'Pendiente';
         var avance  = parseInt(r['Avance (%)'], 10) || 0;
         var notas   = _esc(r['Observaciones'] || '');
+        var badgeCls = Config.statusBadgeClass[estado] || 'status-badge--pending';
+
+        if (!canEdit) {
+            return '<tr data-row-id="' + id + '">' +
+                '<td class="td-readonly">' + fecha   + '</td>' +
+                '<td class="td-readonly">' + horario + '</td>' +
+                '<td class="td-readonly">' + project + '</td>' +
+                '<td><span class="status-badge ' + badgeCls + '">' + _esc(estado) + '</span></td>' +
+                '<td class="td-readonly">' + avance + '%</td>' +
+                '<td class="td-readonly">' + (notas || '—') + '</td>' +
+                '</tr>';
+        }
 
         /* Build Estado <select> */
         var selectOpts = '';
@@ -158,6 +175,8 @@ QC.Tabs.General = (function (Config, Data, Charts) {
     }
 
     function _onTableChange(evt) {
+        if (!Auth.canEdit()) { return; }
+
         var target = evt.target || evt.srcElement;
         if (!target) { return; }
 
@@ -229,9 +248,23 @@ QC.Tabs.General = (function (Config, Data, Charts) {
        ══════════════════════════════════════════════════════════════════ */
 
     function renderTeamAssignment() {
+        if (!Auth.canEdit()) {
+            _renderReadOnlyTeamAssignment();
+            return;
+        }
+
         _populateProjectSelect();
         _populateAuthorMultiselect();
         _wireTeamAssignment();
+    }
+
+    function _renderReadOnlyTeamAssignment() {
+        var section = document.getElementById('team-assignment');
+        if (!section) { return; }
+
+        section.innerHTML =
+            '<h3 class="section-title" id="team-assignment-title">Gestión de Equipos de Asignación</h3>' +
+            '<p class="info-message">La gestión de equipos está disponible solo para cuentas autenticadas.</p>';
     }
 
     function _populateProjectSelect() {
@@ -391,4 +424,4 @@ QC.Tabs.General = (function (Config, Data, Charts) {
         renderChart:   renderChart
     };
 
-}(QC.Config, QC.Data, QC.Charts));
+}(QC.Config, QC.Auth, QC.Data, QC.Charts));

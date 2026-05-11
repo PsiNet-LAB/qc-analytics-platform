@@ -112,6 +112,11 @@ body.auth-page {
     margin-top: var(--space-md);
 }
 
+.auth-guest-link {
+    margin-top: var(--space-md);
+    text-decoration: none;
+}
+
 /* ── Footer note ─────────────────────────────────────────────────────── */
 .auth-footer {
     text-align: center;

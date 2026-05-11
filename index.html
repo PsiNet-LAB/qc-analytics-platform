@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Inicio de sesión — Plataforma Analítica QC. Acceso exclusivo para miembros del equipo PsiNet-LAB.">
+    <meta name="description" content="Inicio de sesión — Plataforma Analítica QC. Acceso público en modo lectura y edición restringida a cuentas autorizadas.">
     <meta name="robots" content="noindex, nofollow">
 
     <title>Iniciar sesión — QC Projects Analytics</title>
@@ -53,7 +53,7 @@
 
             <!-- Institution badge -->
             <div class="auth-institution" aria-label="Institución">
-                🔬 PsiNet-LAB — Acceso restringido
+                🔬 PsiNet-LAB — Consulta pública con edición restringida
             </div>
 
             <!-- Login form -->
@@ -113,8 +113,16 @@
                 </button>
             </form>
 
+            <a
+                class="btn btn-secondary btn-full auth-guest-link"
+                href="app.html"
+                aria-label="Continuar a la plataforma en modo lectura"
+            >
+                Continuar en modo lectura
+            </a>
+
             <footer class="auth-footer">
-                <p>Acceso exclusivo para miembros autorizados de PsiNet-LAB.</p>
+                <p>La plataforma puede consultarse públicamente, pero solo las cuentas autorizadas pueden editar.</p>
             </footer>
 
         </section>
