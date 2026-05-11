@@ -1,7 +1,7 @@
 /**
  * auth.js — Authentication and session management.
  * Single Responsibility: handle login, logout, session persistence, and
- * route protection. Does NOT render any DOM beyond the login form events.
+ * edit-permission checks. Does NOT render any DOM beyond the login form events.
  *
  * Depends on: QC.Config, QC.sha256Sync (both must be loaded first).
  * Uses: SubtleCrypto (async, modern) with QC.sha256Sync as synchronous fallback.
@@ -50,6 +50,14 @@ QC.Auth = (function (Config, sha256Sync) {
      */
     function isLoggedIn() {
         return getSession() !== null;
+    }
+
+    /**
+     * Return true when the current visitor can edit the platform data.
+     * @returns {boolean}
+     */
+    function canEdit() {
+        return isLoggedIn();
     }
 
     /** Clear the session and redirect to the login page. */
@@ -188,6 +196,7 @@ QC.Auth = (function (Config, sha256Sync) {
     /* ── Public API ──────────────────────────────────────────────────── */
     return {
         isLoggedIn:    isLoggedIn,
+        canEdit:       canEdit,
         getSession:    getSession,
         logout:        logout,
         initLoginForm: initLoginForm,

@@ -36,8 +36,12 @@ QC.Sidebar = (function (Config, Auth, Charts) {
         var nameEl    = document.getElementById('sidebar-user-name');
         var emailEl   = document.getElementById('sidebar-user-email');
 
-        if (nameEl  && user) { nameEl.textContent  = user.name;  }
-        if (emailEl && user) { emailEl.textContent = user.email; }
+        if (nameEl) {
+            nameEl.textContent = user ? user.name : 'Modo lectura pública';
+        }
+        if (emailEl) {
+            emailEl.textContent = user ? user.email : 'Inicie sesión para habilitar la edición.';
+        }
     }
 
     /* ── Logout button ───────────────────────────────────────────────── */
@@ -45,6 +49,16 @@ QC.Sidebar = (function (Config, Auth, Charts) {
     function wireLogout() {
         var btn = document.getElementById('logout-btn');
         if (!btn) { return; }
+
+        if (!Auth.isLoggedIn()) {
+            btn.textContent = 'Iniciar sesión para editar';
+            btn.setAttribute('aria-label', 'Iniciar sesión para editar');
+            btn.addEventListener('click', function () {
+                window.location.href = 'index.html';
+            });
+            return;
+        }
+
         btn.addEventListener('click', function () {
             Auth.logout();
         });

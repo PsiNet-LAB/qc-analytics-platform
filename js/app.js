@@ -78,15 +78,12 @@ QC.App = (function (Auth, Data, Sidebar, TabGeneral, TabProfiles) {
 
     /**
      * Main entry point.
-     * 1. Guard: redirect to login if not authenticated.
-     * 2. Show loading overlay.
-     * 3. Load CSV data.
-     * 4. Initialise all UI modules.
-     * 5. Hide loading overlay.
+     * 1. Show loading overlay.
+     * 2. Load CSV data.
+     * 3. Initialise all UI modules.
+     * 4. Hide loading overlay.
      */
     function init() {
-        Auth.requireAuth();
-
         showLoading();
 
         Data.load()
