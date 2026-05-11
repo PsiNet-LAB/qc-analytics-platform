@@ -10,15 +10,6 @@
 
 La plataforma opera como un sitio web estático alojado en **GitHub Pages** (`qc-projects.github.io`), construido íntegramente en HTML, CSS y JavaScript, sin dependencias de servidor externo.
 
-## Usuarios registrados
-
-| Nombre | Correo institucional | Contraseña por defecto |
-|--------|---------------------|------------------------|
-| Angel Alfonso García O'Diana | angel.garcia@psinet-lab.org | `Angel2026@QC` |
-| Dennis Saul Calle Huánuco | dennis.calle@psinet-lab.org | `Dennis2026@QC` |
-
-> **Importante:** Para cambiar la contraseña de un usuario, genere el hash SHA-256 de la nueva contraseña y actualice el valor `passwordHash` correspondiente en `js/config.js`.
-
 ## Arquitectura Técnica
 
 La plataforma sigue una arquitectura **MVC ligera** con alta modularización:
