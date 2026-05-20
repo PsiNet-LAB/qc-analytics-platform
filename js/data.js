@@ -328,6 +328,25 @@ QC.Data = (function (Config) {
         }, SYNC_DEBOUNCE_MS);
     }
 
+    function _postSyncPayload(payload, headers) {
+        return fetch(Config.remoteSync.writeUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        })
+            .then(function (res) {
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
+            });
+    }
+
+    function _buildSyncError(err) {
+        var msg = (err && err.message) ? err.message : 'No se pudo sincronizar';
+        if (typeof msg === 'string' && msg.toLowerCase().indexOf('failed to fetch') !== -1) {
+            return new Error('Failed to fetch (revise CORS/publicación del Apps Script o conectividad de red)');
+        }
+        return err instanceof Error ? err : new Error(msg);
+    }
+
     function syncNow() {
         if (!canRemoteSync()) {
             return Promise.reject(new Error('Sincronización remota no habilitada'));
@@ -348,23 +367,35 @@ QC.Data = (function (Config) {
             headers['X-QC-API-Key'] = Config.remoteSync.apiKey;
         }
 
-        return fetch(Config.remoteSync.writeUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload)
-        })
+        return _postSyncPayload(payload, headers)
             .then(function (res) {
-                if (!res.ok) { throw new Error('HTTP ' + res.status); }
                 _syncState.pending = false;
                 _syncState.lastPushAt = new Date().toISOString();
                 _syncState.lastError = '';
                 clearRemoteDraft();
             })
             ['catch'](function (err) {
+                var baseMsg = (err && err.message) ? String(err.message) : '';
+                var canFallback = baseMsg && baseMsg.toLowerCase().indexOf('failed to fetch') !== -1;
+                if (canFallback) {
+                    return _postSyncPayload(payload, { 'Content-Type': 'text/plain;charset=utf-8' })
+                        .then(function () {
+                            _syncState.pending = false;
+                            _syncState.lastPushAt = new Date().toISOString();
+                            _syncState.lastError = '';
+                            clearRemoteDraft();
+                        })
+                        ['catch'](function (fallbackErr) {
+                            _syncState.pending = false;
+                            _syncState.lastError = _buildSyncError(fallbackErr).message;
+                            saveRemoteDraft(payload.rows);
+                            throw _buildSyncError(fallbackErr);
+                        });
+                }
                 _syncState.pending = false;
-                _syncState.lastError = (err && err.message) ? err.message : 'No se pudo sincronizar';
+                _syncState.lastError = _buildSyncError(err).message;
                 saveRemoteDraft(payload.rows);
-                throw err;
+                throw _buildSyncError(err);
             });
     }
 
