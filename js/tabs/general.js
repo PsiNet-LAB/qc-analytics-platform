@@ -244,6 +244,99 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
     }
 
     /* ══════════════════════════════════════════════════════════════════
+       4.1 REMOTE SYNC CONTROLS
+       ══════════════════════════════════════════════════════════════════ */
+
+    function renderSyncControls() {
+        var box = document.getElementById('sync-controls');
+        if (!box) { return; }
+
+        if (!Auth.canEdit()) {
+            box.innerHTML =
+                '<p class="info-message">La sincronización remota está disponible solo para cuentas con edición.</p>';
+            return;
+        }
+
+        if (!Data.canRemoteSync()) {
+            box.innerHTML =
+                '<p class="info-message">Sincronización remota desactivada. Configure <code>remoteSync</code> en <code>js/config.js</code>.</p>';
+            return;
+        }
+
+        box.innerHTML =
+            '<div class="download-section">' +
+                '<button class="btn btn-secondary" id="sync-pull-btn" type="button" aria-label="Actualizar datos desde la hoja compartida">Actualizar desde hoja</button>' +
+                '<button class="btn btn-primary" id="sync-push-btn" type="button" aria-label="Sincronizar cambios con la hoja compartida">Sincronizar cambios</button>' +
+            '</div>' +
+            '<p class="info-message" id="sync-status-text" role="status" aria-live="polite"></p>';
+
+        _wireSyncControls();
+        _renderSyncStatus();
+    }
+
+    function _wireSyncControls() {
+        var pullBtn = document.getElementById('sync-pull-btn');
+        var pushBtn = document.getElementById('sync-push-btn');
+        if (pullBtn) {
+            pullBtn.addEventListener('click', function () {
+                pullBtn.disabled = true;
+                Data.refreshFromRemote()
+                    .then(function () {
+                        render();
+                        showToast('Datos remotos actualizados.', 'success');
+                    })
+                    ['catch'](function (err) {
+                        showToast('No se pudo actualizar: ' + ((err && err.message) ? err.message : 'error desconocido'), 'error');
+                    })
+                    .then(function () {
+                        pullBtn.disabled = false;
+                        _renderSyncStatus();
+                    });
+            });
+        }
+        if (pushBtn) {
+            pushBtn.addEventListener('click', function () {
+                pushBtn.disabled = true;
+                Data.syncNow()
+                    .then(function () {
+                        showToast('Cambios sincronizados con la hoja.', 'success');
+                    })
+                    ['catch'](function (err) {
+                        showToast('No se pudo sincronizar: ' + ((err && err.message) ? err.message : 'error desconocido'), 'error');
+                    })
+                    .then(function () {
+                        pushBtn.disabled = false;
+                        _renderSyncStatus();
+                    });
+            });
+        }
+    }
+
+    function _renderSyncStatus() {
+        var el = document.getElementById('sync-status-text');
+        if (!el) { return; }
+        var meta = Data.getSyncMeta();
+        if (!meta.enabled) {
+            el.textContent = 'Sincronización remota desactivada.';
+            return;
+        }
+
+        var parts = ['Modo actual: ' + (meta.mode === 'remote' ? 'remoto' : 'local') + '.'];
+        if (meta.lastPullAt) { parts.push('Última lectura: ' + _fmtDate(meta.lastPullAt) + '.'); }
+        if (meta.lastPushAt) { parts.push('Última escritura: ' + _fmtDate(meta.lastPushAt) + '.'); }
+        if (meta.pending)    { parts.push('Sincronizando cambios…'); }
+        if (meta.hasDraft)   { parts.push('Hay cambios pendientes por reintentar.'); }
+        if (meta.lastError)  { parts.push('Último error: ' + meta.lastError + '.'); }
+        el.textContent = parts.join(' ');
+    }
+
+    function _fmtDate(iso) {
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) { return iso; }
+        return d.toLocaleString();
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
        5. TEAM ASSIGNMENT
        ══════════════════════════════════════════════════════════════════ */
 
@@ -414,6 +507,7 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
         renderChart();
         renderEditTable();
         wireDownload();
+        renderSyncControls();
         renderTeamAssignment();
     }
 
