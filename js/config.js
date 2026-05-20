@@ -67,9 +67,9 @@ QC.Config = (function () {
     var SYNC_DEBOUNCE_MS = 800;
     var SYNC_SOURCE = 'qc-analytics-platform';
     var REMOTE_SYNC  = {
-        enabled: false,
-        readUrl: '',
-        writeUrl: '',
+        enabled: true,
+        readUrl: 'https://script.google.com/macros/s/AKfycbwqUZ1MizNGQQR8zmAp6oitbOkuwGkTp-MV3dw_c3rRowPG9f95KnDrWxXVHEpsIjQ/exec',
+        writeUrl: 'https://script.google.com/macros/s/AKfycbwqUZ1MizNGQQR8zmAp6oitbOkuwGkTp-MV3dw_c3rRowPG9f95KnDrWxXVHEpsIjQ/exec',
         apiKey: ''
     };
 
