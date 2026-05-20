@@ -65,6 +65,7 @@ QC.Config = (function () {
     var DATA_CSV_URL = 'data/projects.csv';
     var DATA_COLUMNS = ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
     var SYNC_DEBOUNCE_MS = 800;
+    var SYNC_SOURCE = 'qc-analytics-platform';
     var REMOTE_SYNC  = {
         enabled: false,
         readUrl: '',
@@ -84,6 +85,7 @@ QC.Config = (function () {
         dataCsvUrl:      DATA_CSV_URL,
         dataColumns:     DATA_COLUMNS,
         syncDebounceMs:  SYNC_DEBOUNCE_MS,
+        syncSource:      SYNC_SOURCE,
         remoteSync:      REMOTE_SYNC
     };
 }());
