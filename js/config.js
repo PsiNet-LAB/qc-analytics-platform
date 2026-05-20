@@ -63,6 +63,12 @@ QC.Config = (function () {
 
     /* ── Data source ─────────────────────────────────────────────────── */
     var DATA_CSV_URL = 'data/projects.csv';
+    var REMOTE_SYNC  = {
+        enabled: false,
+        readUrl: '',
+        writeUrl: '',
+        apiKey: ''
+    };
 
     /* ── Public API ──────────────────────────────────────────────────── */
     return {
@@ -73,6 +79,7 @@ QC.Config = (function () {
         storageKey:      STORAGE_KEY,
         sessionKey:      SESSION_KEY,
         themeKey:        THEME_KEY,
-        dataCsvUrl:      DATA_CSV_URL
+        dataCsvUrl:      DATA_CSV_URL,
+        remoteSync:      REMOTE_SYNC
     };
 }());

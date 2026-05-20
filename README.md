@@ -18,7 +18,7 @@ La plataforma sigue una arquitectura **MVC ligera** con alta modularización:
 index.html            ← Página de inicio de sesión
 app.html              ← Panel principal (protegido)
 browser-support.js    ← Polyfills y detección de características (IE9+)
-data/projects.csv     ← Fuente de datos estática
+  data/projects.csv     ← Fuente de datos estática (fallback)
 
 css/
   reset.css           ← Reset de estilos base
@@ -33,7 +33,7 @@ js/
   config.js           ← Constantes globales (usuarios, colores, rutas)
   sha256.js           ← SHA-256 puro en JS (IE9+ sin SubtleCrypto)
   auth.js             ← Autenticación y gestión de sesión
-  data.js             ← Carga CSV, persistencia en localStorage
+  data.js             ← Carga CSV/remota, persistencia local y sincronización opcional
   charts.js           ← Wrapper de Chart.js (gráfico de barras)
   sidebar.js          ← Tema, usuario y navegación lateral
   tabs/general.js     ← Panel operativo: KPIs, tabla, descarga, equipos
@@ -55,9 +55,47 @@ js/
 
 1. **Autenticación del lado del cliente:** Las credenciales se verifican en el navegador mediante hashes SHA-256. Cualquier usuario con acceso al repositorio puede ver los hashes. Esta autenticación es adecuada para un equipo pequeño y de confianza, **no para datos altamente sensibles**. Para mayor seguridad, migrar a una solución con backend (ej. Firebase Auth, Supabase).
 
-2. **Persistencia local:** Los cambios realizados en la tabla de datos se almacenan en `localStorage` del navegador de cada usuario. Los cambios **no se sincronizan automáticamente** entre los dispositivos o navegadores de los dos investigadores. Para colaboración en tiempo real, se recomienda integrar un servicio de base de datos en la nube (ej. Firebase Realtime Database, Supabase).
+2. **Persistencia y sincronización:** En modo base, los cambios se guardan en `localStorage` del navegador de cada usuario. También puede habilitarse sincronización remota opcional (Google Sheets + Apps Script) para compartir cambios sin Firebase/Supabase.
 
 3. **Datos de referencia:** La matriz de datos base proviene de `data/projects.csv`. Para actualizar los datos base permanentemente, edite este archivo directamente en el repositorio.
+
+## Sincronización remota (Google Sheets + Apps Script)
+
+La plataforma soporta un modo automatizado sin BaaS: **Google Sheets como fuente de datos** y **Apps Script como endpoint web**.
+
+### 1) Configurar `js/config.js`
+
+Active `remoteSync`:
+
+```js
+remoteSync: {
+  enabled: true,
+  readUrl: 'https://script.google.com/macros/s/.../exec',
+  writeUrl: 'https://script.google.com/macros/s/.../exec',
+  apiKey: 'TU_API_KEY_OPCIONAL'
+}
+```
+
+> Si `enabled` es `false` o faltan URLs, la app usa automáticamente el modo local (`data/projects.csv` + `localStorage`).
+
+### 2) Apps Script (Web App) — contrato esperado
+
+- `GET`: devuelve JSON como:
+  - `[{...fila1}, {...fila2}]` **o**
+  - `{ "rows": [{...fila1}, {...fila2}] }`
+- `POST`: recibe:
+  - `{ "rows": [...], "source": "qc-analytics-platform", "updatedAt": "ISO-8601" }`
+- Header opcional para validación: `X-QC-API-Key`.
+
+Las columnas esperadas por fila son:
+
+`Semana, Fecha, Horario, Proyecto, Autores, Revisor, Estado, Avance (%), Observaciones`
+
+### 3) Uso en UI
+
+- **Actualizar desde hoja**: recarga la matriz compartida.
+- **Sincronizar cambios**: fuerza envío manual inmediato.
+- Las ediciones también intentan sincronizarse automáticamente; si falla la red, se conserva un borrador local para reintento.
 
 ## Estructura de Datos
 

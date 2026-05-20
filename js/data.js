@@ -6,12 +6,9 @@
  * Depends on: QC.Config.
  * Storage format: JSON array of row objects keyed by CSV column names.
  *
- * ARCHITECTURE NOTE: Because this site is hosted on GitHub Pages (static),
- * data edits are stored in each user's browser localStorage only. Changes
- * made by one team member are NOT automatically visible to others. To share
- * edits, users must export the updated CSV (download button) and commit it
- * to the repository. For real-time collaboration, consider integrating a
- * cloud database service. See README.md § Limitaciones conocidas.
+ * ARCHITECTURE NOTE: This module keeps localStorage persistence as the
+ * baseline mode for static hosting, and optionally supports remote sync
+ * (e.g. Google Sheets + Apps Script) when QC.Config.remoteSync is enabled.
  */
 
 /* global QC */
@@ -23,6 +20,16 @@ QC.Data = (function (Config) {
     /* ── Internal state ──────────────────────────────────────────────── */
     var _rows      = [];   // Current in-memory data matrix
     var _allAuthors = [];  // Sorted unique author list
+    var _syncTimer = null;
+    var _syncState = {
+        mode: 'csv',
+        pending: false,
+        lastPushAt: '',
+        lastPullAt: '',
+        lastError: ''
+    };
+    var DATA_COLUMNS = ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
+    var REMOTE_DRAFT_KEY = Config.storageKey + '_remote_draft';
 
     /* ── CSV parser ──────────────────────────────────────────────────── */
 
@@ -174,6 +181,22 @@ QC.Data = (function (Config) {
         }
     }
 
+    function saveRemoteDraft(rows) {
+        try {
+            localStorage.setItem(REMOTE_DRAFT_KEY, JSON.stringify(rows || []));
+        } catch (e) {
+            /* ignore */
+        }
+    }
+
+    function clearRemoteDraft() {
+        try {
+            localStorage.removeItem(REMOTE_DRAFT_KEY);
+        } catch (e) {
+            /* ignore */
+        }
+    }
+
     /**
      * Merge persisted edits from localStorage back into the data matrix.
      * @param {Array<Object>} rows
@@ -206,6 +229,15 @@ QC.Data = (function (Config) {
      * @returns {Promise}  Resolves when data is ready.
      */
     function load() {
+        if (canRemoteSync()) {
+            return _loadFromRemote()['catch'](function () {
+                return _loadFromCSV();
+            });
+        }
+        return _loadFromCSV();
+    }
+
+    function _loadFromCSV() {
         return fetch(Config.dataCsvUrl)
             .then(function (res) {
                 if (!res.ok) { throw new Error('HTTP ' + res.status); }
@@ -216,7 +248,138 @@ QC.Data = (function (Config) {
                 var norm = normalise(raw);
                 _rows       = applyStoredEdits(norm);
                 _allAuthors = extractAuthors(_rows);
+                _syncState.mode = 'csv';
+                _syncState.lastPullAt = new Date().toISOString();
+                _syncState.lastError = '';
             });
+    }
+
+    function _loadFromRemote() {
+        return fetch(Config.remoteSync.readUrl, {
+            method: 'GET',
+            cache: 'no-cache'
+        })
+            .then(function (res) {
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                return res.json();
+            })
+            .then(function (payload) {
+                var raw = _extractRemoteRows(payload);
+                var norm = normalise(raw);
+                _rows = norm;
+                _allAuthors = extractAuthors(_rows);
+                _syncState.mode = 'remote';
+                _syncState.lastPullAt = new Date().toISOString();
+                _syncState.lastError = '';
+                saveToStorage();
+            });
+    }
+
+    function _extractRemoteRows(payload) {
+        if (Object.prototype.toString.call(payload) === '[object Array]') {
+            return payload;
+        }
+        if (payload && Object.prototype.toString.call(payload.rows) === '[object Array]') {
+            return payload.rows;
+        }
+        throw new Error('Formato remoto inválido');
+    }
+
+    function canRemoteSync() {
+        return !!(
+            Config.remoteSync &&
+            Config.remoteSync.enabled &&
+            Config.remoteSync.readUrl &&
+            Config.remoteSync.writeUrl
+        );
+    }
+
+    function _serialiseRowsForRemote() {
+        var result = [];
+        for (var i = 0; i < _rows.length; i++) {
+            var row = _rows[i];
+            var out = {};
+            for (var j = 0; j < DATA_COLUMNS.length; j++) {
+                var col = DATA_COLUMNS[j];
+                out[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : '';
+            }
+            result.push(out);
+        }
+        return result;
+    }
+
+    function _scheduleRemoteSync() {
+        if (!canRemoteSync()) { return; }
+        clearTimeout(_syncTimer);
+        _syncTimer = setTimeout(function () {
+            syncNow();
+        }, 800);
+    }
+
+    function syncNow() {
+        if (!canRemoteSync()) {
+            return Promise.reject(new Error('Sincronización remota no habilitada'));
+        }
+
+        _syncState.pending = true;
+        _syncState.lastError = '';
+
+        var payload = {
+            rows: _serialiseRowsForRemote(),
+            source: 'qc-analytics-platform',
+            updatedAt: new Date().toISOString()
+        };
+        var headers = {
+            'Content-Type': 'application/json'
+        };
+        if (Config.remoteSync.apiKey) {
+            headers['X-QC-API-Key'] = Config.remoteSync.apiKey;
+        }
+
+        return fetch(Config.remoteSync.writeUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        })
+            .then(function (res) {
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                _syncState.pending = false;
+                _syncState.lastPushAt = new Date().toISOString();
+                _syncState.lastError = '';
+                clearRemoteDraft();
+            })
+            ['catch'](function (err) {
+                _syncState.pending = false;
+                _syncState.lastError = (err && err.message) ? err.message : 'No se pudo sincronizar';
+                saveRemoteDraft(payload.rows);
+                throw err;
+            });
+    }
+
+    function refreshFromRemote() {
+        if (!canRemoteSync()) {
+            return Promise.reject(new Error('Sincronización remota no habilitada'));
+        }
+        return _loadFromRemote();
+    }
+
+    function getSyncMeta() {
+        var hasDraft = false;
+        try {
+            hasDraft = !!localStorage.getItem(REMOTE_DRAFT_KEY);
+        } catch (e) {
+            hasDraft = false;
+        }
+
+        return {
+            enabled: canRemoteSync(),
+            mode: _syncState.mode,
+            pending: _syncState.pending,
+            lastPushAt: _syncState.lastPushAt,
+            lastPullAt: _syncState.lastPullAt,
+            lastError: _syncState.lastError,
+            hasDraft: hasDraft
+        };
     }
 
     /* ── Mutation API ────────────────────────────────────────────────── */
@@ -235,6 +398,7 @@ QC.Data = (function (Config) {
             }
         }
         saveToStorage();
+        _scheduleRemoteSync();
     }
 
     /**
@@ -252,6 +416,7 @@ QC.Data = (function (Config) {
         /* Rebuild author list */
         _allAuthors = extractAuthors(_rows);
         saveToStorage();
+        _scheduleRemoteSync();
     }
 
     /**
@@ -421,7 +586,11 @@ QC.Data = (function (Config) {
         updateField:          updateField,
         updateProjectAuthors: updateProjectAuthors,
         addAuthor:            addAuthor,
-        toCSV:                toCSV
+        toCSV:                toCSV,
+        canRemoteSync:        canRemoteSync,
+        syncNow:              syncNow,
+        refreshFromRemote:    refreshFromRemote,
+        getSyncMeta:          getSyncMeta
     };
 
 }(QC.Config));
