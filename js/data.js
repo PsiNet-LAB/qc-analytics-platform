@@ -28,7 +28,9 @@ QC.Data = (function (Config) {
         lastPullAt: '',
         lastError: ''
     };
-    var DATA_COLUMNS = _isArray(Config.dataColumns) ? Config.dataColumns.slice() : [];
+    var DATA_COLUMNS = ((Array.isArray && Array.isArray(Config.dataColumns)) || (!Array.isArray && Object.prototype.toString.call(Config.dataColumns) === '[object Array]'))
+        ? Config.dataColumns.slice()
+        : ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
     var SYNC_DEBOUNCE_MS = Config.syncDebounceMs;
     var SYNC_SOURCE = Config.syncSource || 'qc-analytics-platform';
     var REMOTE_DRAFT_KEY = Config.storageKey + '_remote_draft';
@@ -336,7 +338,7 @@ QC.Data = (function (Config) {
 
         var payload = {
             rows: _serialiseRowsForRemote(),
-            source: SYNC_SOURCE || 'qc-analytics-platform',
+            source: SYNC_SOURCE,
             updatedAt: new Date().toISOString()
         };
         var headers = {
@@ -450,7 +452,6 @@ QC.Data = (function (Config) {
      */
     function toCSV() {
         var cols = DATA_COLUMNS.slice();
-        if (!cols.length) { return ''; }
         var lines = [cols.join(',')];
 
         for (var i = 0; i < _rows.length; i++) {
