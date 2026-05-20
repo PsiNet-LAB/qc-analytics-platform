@@ -28,9 +28,8 @@ QC.Data = (function (Config) {
         lastPullAt: '',
         lastError: ''
     };
-    var DEFAULT_SYNC_DEBOUNCE_MS = 800;
-    var DATA_COLUMNS = (Config.dataColumns && Config.dataColumns.slice) ? Config.dataColumns.slice() : ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
-    var SYNC_DEBOUNCE_MS = (typeof Config.syncDebounceMs === 'number' && Config.syncDebounceMs > 0) ? Config.syncDebounceMs : DEFAULT_SYNC_DEBOUNCE_MS;
+    var DATA_COLUMNS = (Config.dataColumns && Config.dataColumns.slice) ? Config.dataColumns.slice() : [];
+    var SYNC_DEBOUNCE_MS = Config.syncDebounceMs;
     var SYNC_SOURCE = Config.syncSource || 'qc-analytics-platform';
     var REMOTE_DRAFT_KEY = Config.storageKey + '_remote_draft';
 
@@ -447,7 +446,14 @@ QC.Data = (function (Config) {
      * @returns {string}
      */
     function toCSV() {
-        var cols = ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
+        var cols = DATA_COLUMNS.slice();
+        if (!cols.length && _rows.length > 0) {
+            var first = _rows[0];
+            for (var key in first) {
+                if (!Object.prototype.hasOwnProperty.call(first, key)) { continue; }
+                if (key !== '_id') { cols.push(key); }
+            }
+        }
         var lines = [cols.join(',')];
 
         for (var i = 0; i < _rows.length; i++) {

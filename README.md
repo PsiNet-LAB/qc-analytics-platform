@@ -18,7 +18,7 @@ La plataforma sigue una arquitectura **MVC ligera** con alta modularización:
 index.html            ← Página de inicio de sesión
 app.html              ← Panel principal (protegido)
 browser-support.js    ← Polyfills y detección de características (IE9+)
-  data/projects.csv     ← Fuente de datos estática (fallback)
+data/projects.csv       ← Fuente de datos estática (fallback)
 
 css/
   reset.css           ← Reset de estilos base
