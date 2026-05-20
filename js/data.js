@@ -340,10 +340,6 @@ QC.Data = (function (Config) {
             });
     }
 
-    function _postSyncPayload(payload, headers) {
-        return _postRawSyncPayload(JSON.stringify(payload), headers);
-    }
-
     function _isFailedFetchError(err) {
         var msg = (err && err.message) ? String(err.message) : '';
         return !!(msg && msg.toLowerCase().indexOf('failed to fetch') !== -1);
@@ -377,6 +373,7 @@ QC.Data = (function (Config) {
             source: SYNC_SOURCE,
             updatedAt: new Date().toISOString()
         };
+        var payloadJson = JSON.stringify(payload);
         var headers = {
             'Content-Type': 'application/json'
         };
@@ -384,14 +381,14 @@ QC.Data = (function (Config) {
             headers['X-QC-API-Key'] = Config.remoteSync.apiKey;
         }
 
-        return _postSyncPayload(payload, headers)
+        return _postRawSyncPayload(payloadJson, headers)
             .then(function () {
                 _markSyncSuccess();
             })
             ['catch'](function (err) {
                 var canFallback = _isFailedFetchError(err);
                 if (canFallback) {
-                    return _postRawSyncPayload(JSON.stringify(payload), { 'Content-Type': 'text/plain;charset=utf-8' })
+                    return _postRawSyncPayload(payloadJson, { 'Content-Type': 'text/plain;charset=utf-8' })
                         .then(function () {
                             _markSyncSuccess();
                         })
