@@ -328,6 +328,38 @@ QC.Data = (function (Config) {
         }, SYNC_DEBOUNCE_MS);
     }
 
+    function _postRawSyncPayload(rawBody, headers) {
+        return fetch(Config.remoteSync.writeUrl, {
+            method: 'POST',
+            headers: headers,
+            body: rawBody
+        })
+            .then(function (res) {
+                if (!res.ok) { throw new Error('HTTP ' + res.status); }
+                return res;
+            });
+    }
+
+    function _isFailedFetchError(err) {
+        var msg = (err && err.message) ? String(err.message) : '';
+        return !!(msg && msg.toLowerCase().indexOf('failed to fetch') !== -1);
+    }
+
+    function _buildSyncError(err) {
+        var msg = (err && err.message) ? err.message : 'No se pudo sincronizar';
+        if (_isFailedFetchError(err)) {
+            return new Error('No se pudo conectar con el endpoint remoto (revise CORS/publicación del Apps Script o conectividad de red)');
+        }
+        return err instanceof Error ? err : new Error(msg);
+    }
+
+    function _markSyncSuccess() {
+        _syncState.pending = false;
+        _syncState.lastPushAt = new Date().toISOString();
+        _syncState.lastError = '';
+        clearRemoteDraft();
+    }
+
     function syncNow() {
         if (!canRemoteSync()) {
             return Promise.reject(new Error('Sincronización remota no habilitada'));
@@ -341,6 +373,7 @@ QC.Data = (function (Config) {
             source: SYNC_SOURCE,
             updatedAt: new Date().toISOString()
         };
+        var payloadJson = JSON.stringify(payload);
         var headers = {
             'Content-Type': 'application/json'
         };
@@ -348,23 +381,30 @@ QC.Data = (function (Config) {
             headers['X-QC-API-Key'] = Config.remoteSync.apiKey;
         }
 
-        return fetch(Config.remoteSync.writeUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload)
-        })
-            .then(function (res) {
-                if (!res.ok) { throw new Error('HTTP ' + res.status); }
-                _syncState.pending = false;
-                _syncState.lastPushAt = new Date().toISOString();
-                _syncState.lastError = '';
-                clearRemoteDraft();
+        return _postRawSyncPayload(payloadJson, headers)
+            .then(function () {
+                _markSyncSuccess();
             })
             ['catch'](function (err) {
+                var canFallback = _isFailedFetchError(err);
+                if (canFallback) {
+                    return _postRawSyncPayload(payloadJson, { 'Content-Type': 'text/plain;charset=utf-8' })
+                        .then(function () {
+                            _markSyncSuccess();
+                        })
+                        ['catch'](function (fallbackErr) {
+                            var fallbackSyncErr = _buildSyncError(fallbackErr);
+                            _syncState.pending = false;
+                            _syncState.lastError = fallbackSyncErr.message;
+                            saveRemoteDraft(payload.rows);
+                            throw fallbackSyncErr;
+                        });
+                }
+                var syncErr = _buildSyncError(err);
                 _syncState.pending = false;
-                _syncState.lastError = (err && err.message) ? err.message : 'No se pudo sincronizar';
+                _syncState.lastError = syncErr.message;
                 saveRemoteDraft(payload.rows);
-                throw err;
+                throw syncErr;
             });
     }
 
