@@ -328,11 +328,11 @@ QC.Data = (function (Config) {
         }, SYNC_DEBOUNCE_MS);
     }
 
-    function _postSyncPayload(payload, headers) {
+    function _postRawSyncPayload(rawBody, headers) {
         return fetch(Config.remoteSync.writeUrl, {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify(payload)
+            body: rawBody
         })
             .then(function (res) {
                 if (!res.ok) { throw new Error('HTTP ' + res.status); }
@@ -340,9 +340,18 @@ QC.Data = (function (Config) {
             });
     }
 
+    function _postSyncPayload(payload, headers) {
+        return _postRawSyncPayload(JSON.stringify(payload), headers);
+    }
+
+    function _isFailedFetchError(err) {
+        var msg = (err && err.message) ? String(err.message) : '';
+        return !!(msg && msg.toLowerCase().indexOf('failed to fetch') !== -1);
+    }
+
     function _buildSyncError(err) {
         var msg = (err && err.message) ? err.message : 'No se pudo sincronizar';
-        if (typeof msg === 'string' && msg.toLowerCase().indexOf('failed to fetch') !== -1) {
+        if (_isFailedFetchError(err)) {
             return new Error('No se pudo conectar con el endpoint remoto (revise CORS/publicación del Apps Script o conectividad de red)');
         }
         return err instanceof Error ? err : new Error(msg);
@@ -380,10 +389,9 @@ QC.Data = (function (Config) {
                 _markSyncSuccess();
             })
             ['catch'](function (err) {
-                var baseMsg = (err && err.message) ? String(err.message) : '';
-                var canFallback = baseMsg && baseMsg.toLowerCase().indexOf('failed to fetch') !== -1;
+                var canFallback = _isFailedFetchError(err);
                 if (canFallback) {
-                    return _postSyncPayload(payload, { 'Content-Type': 'text/plain;charset=utf-8' })
+                    return _postRawSyncPayload(JSON.stringify(payload), { 'Content-Type': 'text/plain;charset=utf-8' })
                         .then(function () {
                             _markSyncSuccess();
                         })
