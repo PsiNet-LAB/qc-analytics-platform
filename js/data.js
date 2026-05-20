@@ -28,7 +28,7 @@ QC.Data = (function (Config) {
         lastPullAt: '',
         lastError: ''
     };
-    var DATA_COLUMNS = (Config.dataColumns && Config.dataColumns.slice) ? Config.dataColumns.slice() : [];
+    var DATA_COLUMNS = _isArray(Config.dataColumns) ? Config.dataColumns.slice() : [];
     var SYNC_DEBOUNCE_MS = Config.syncDebounceMs;
     var SYNC_SOURCE = Config.syncSource || 'qc-analytics-platform';
     var REMOTE_DRAFT_KEY = Config.storageKey + '_remote_draft';
@@ -232,7 +232,10 @@ QC.Data = (function (Config) {
      */
     function load() {
         if (canRemoteSync()) {
-            return _loadFromRemote()['catch'](function () {
+            return _loadFromRemote()['catch'](function (err) {
+                if (typeof console !== 'undefined' && console && console.warn) {
+                    console.warn('[QC.Data] Remote load failed, falling back to CSV:', err);
+                }
                 return _loadFromCSV();
             });
         }
@@ -333,7 +336,7 @@ QC.Data = (function (Config) {
 
         var payload = {
             rows: _serialiseRowsForRemote(),
-            source: SYNC_SOURCE,
+            source: SYNC_SOURCE || 'qc-analytics-platform',
             updatedAt: new Date().toISOString()
         };
         var headers = {
@@ -447,13 +450,7 @@ QC.Data = (function (Config) {
      */
     function toCSV() {
         var cols = DATA_COLUMNS.slice();
-        if (!cols.length && _rows.length > 0) {
-            var first = _rows[0];
-            for (var key in first) {
-                if (!Object.prototype.hasOwnProperty.call(first, key)) { continue; }
-                if (key !== '_id') { cols.push(key); }
-            }
-        }
+        if (!cols.length) { return ''; }
         var lines = [cols.join(',')];
 
         for (var i = 0; i < _rows.length; i++) {
