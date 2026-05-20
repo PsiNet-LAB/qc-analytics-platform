@@ -125,7 +125,7 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
 
     function _buildTableRow(r, canEdit) {
         var id      = r._id;
-        var fecha   = _esc(r['Fecha']   || '');
+        var fecha   = _esc(_formatDateDMY(r['Fecha']));
         var horario = _esc(r['Horario'] || '');
         var project = _esc(r['Proyecto'] || '');
         var estado  = r['Estado'] || 'Pendiente';
@@ -334,6 +334,21 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
         var d = new Date(iso);
         if (isNaN(d.getTime())) { return iso; }
         return d.toLocaleString();
+    }
+
+    function _formatDateDMY(value) {
+        var input = String(value || '').trim();
+        if (!input) { return ''; }
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(input)) { return input; }
+        var isoLike = input.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+        if (isoLike) { return isoLike[3] + '/' + isoLike[2] + '/' + isoLike[1]; }
+        var d = new Date(input);
+        if (isNaN(d.getTime())) { return input; }
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        return (day < 10 ? '0' : '') + day + '/' +
+            (month < 10 ? '0' : '') + month + '/' + year;
     }
 
     /* ══════════════════════════════════════════════════════════════════

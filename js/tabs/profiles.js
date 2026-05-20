@@ -24,6 +24,21 @@ QC.Tabs.Profiles = (function (Config, Data) {
             .replace(/'/g, '&#39;');
     }
 
+    function _formatDateDMY(value) {
+        var input = String(value || '').trim();
+        if (!input) { return ''; }
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(input)) { return input; }
+        var isoLike = input.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+        if (isoLike) { return isoLike[3] + '/' + isoLike[2] + '/' + isoLike[1]; }
+        var d = new Date(input);
+        if (isNaN(d.getTime())) { return input; }
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        return (day < 10 ? '0' : '') + day + '/' +
+            (month < 10 ? '0' : '') + month + '/' + year;
+    }
+
     /* ── Researcher selector ─────────────────────────────────────────── */
 
     function populateResearcherSelect() {
@@ -113,7 +128,7 @@ QC.Tabs.Profiles = (function (Config, Data) {
             tableHtml +=
                 '<tr>' +
                 '<td class="td-readonly">' + _esc(String(r['Semana'] || '')) + '</td>' +
-                '<td class="td-readonly">' + _esc(r['Fecha'] || '') + '</td>' +
+                '<td class="td-readonly">' + _esc(_formatDateDMY(r['Fecha'])) + '</td>' +
                 '<td class="td-readonly">' + _esc(r['Horario'] || '') + '</td>' +
                 '<td>' + _esc(r['Proyecto'] || '') + '</td>' +
                 '<td>' + _esc(r['Rol Operativo'] || '') + '</td>' +
