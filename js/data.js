@@ -28,7 +28,8 @@ QC.Data = (function (Config) {
         lastPullAt: '',
         lastError: ''
     };
-    var DATA_COLUMNS = ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
+    var DATA_COLUMNS = (Config.dataColumns && Config.dataColumns.slice) ? Config.dataColumns.slice() : ['Semana', 'Fecha', 'Horario', 'Proyecto', 'Autores', 'Revisor', 'Estado', 'Avance (%)', 'Observaciones'];
+    var SYNC_DEBOUNCE_MS = (typeof Config.syncDebounceMs === 'number' && Config.syncDebounceMs > 0) ? Config.syncDebounceMs : 800;
     var REMOTE_DRAFT_KEY = Config.storageKey + '_remote_draft';
 
     /* ── CSV parser ──────────────────────────────────────────────────── */
@@ -276,13 +277,18 @@ QC.Data = (function (Config) {
     }
 
     function _extractRemoteRows(payload) {
-        if (Object.prototype.toString.call(payload) === '[object Array]') {
+        if (_isArray(payload)) {
             return payload;
         }
-        if (payload && Object.prototype.toString.call(payload.rows) === '[object Array]') {
+        if (payload && _isArray(payload.rows)) {
             return payload.rows;
         }
         throw new Error('Formato remoto inválido');
+    }
+
+    function _isArray(value) {
+        if (Array.isArray) { return Array.isArray(value); }
+        return Object.prototype.toString.call(value) === '[object Array]';
     }
 
     function canRemoteSync() {
@@ -313,7 +319,7 @@ QC.Data = (function (Config) {
         clearTimeout(_syncTimer);
         _syncTimer = setTimeout(function () {
             syncNow();
-        }, 800);
+        }, SYNC_DEBOUNCE_MS);
     }
 
     function syncNow() {

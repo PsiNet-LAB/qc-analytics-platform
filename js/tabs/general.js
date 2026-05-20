@@ -265,8 +265,8 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
 
         box.innerHTML =
             '<div class="download-section">' +
-                '<button class="btn btn-secondary" id="sync-pull-btn" type="button">🔄 Actualizar desde hoja</button>' +
-                '<button class="btn btn-primary" id="sync-push-btn" type="button">☁️ Sincronizar cambios</button>' +
+                '<button class="btn btn-secondary" id="sync-pull-btn" type="button" aria-label="Actualizar datos desde la hoja compartida">🔄 Actualizar desde hoja</button>' +
+                '<button class="btn btn-primary" id="sync-push-btn" type="button" aria-label="Sincronizar cambios con la hoja compartida">☁️ Sincronizar cambios</button>' +
             '</div>' +
             '<p class="info-message" id="sync-status-text" role="status" aria-live="polite"></p>';
 
