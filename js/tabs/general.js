@@ -189,7 +189,7 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
         if (!field) { return; }
 
         var value = target.value;
-        if (field === 'Avance (%)') { value = parseFloat(value) || 0; }
+        if (field === 'Avance (%)') { value = Math.min(100, Math.max(0, parseFloat(value) || 0)); }
 
         Data.updateField(rowId, field, value);
         tr.classList.add('row--modified');
