@@ -129,7 +129,7 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
         var horario = _esc(r['Horario'] || '');
         var project = _esc(r['Proyecto'] || '');
         var estado  = r['Estado'] || 'Pendiente';
-        var avance  = parseInt(r['Avance (%)'], 10) || 0;
+        var avance  = parseFloat(r['Avance (%)']) || 0;
         var notas   = _esc(r['Observaciones'] || '');
         var badgeCls = Config.statusBadgeClass[estado] || 'status-badge--pending';
 
@@ -163,7 +163,7 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
             '</td>' +
             '<td>' +
                 '<input type="number" class="td-number" data-field="Avance (%)" ' +
-                'min="0" max="100" step="5" value="' + avance + '" ' +
+                'min="0" max="100" step="0.1" value="' + avance + '" ' +
                 'aria-label="Avance de ' + project + '">' +
             '</td>' +
             '<td>' +
@@ -189,7 +189,7 @@ QC.Tabs.General = (function (Config, Auth, Data, Charts) {
         if (!field) { return; }
 
         var value = target.value;
-        if (field === 'Avance (%)') { value = parseInt(value, 10) || 0; }
+        if (field === 'Avance (%)') { value = parseFloat(value) || 0; }
 
         Data.updateField(rowId, field, value);
         tr.classList.add('row--modified');

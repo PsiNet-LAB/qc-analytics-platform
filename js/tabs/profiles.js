@@ -90,7 +90,7 @@ QC.Tabs.Profiles = (function (Config, Data) {
         var sumAvance = 0;
 
         for (var i = 0; i < rows.length; i++) {
-            sumAvance += (parseInt(rows[i]['Avance (%)'], 10) || 0);
+            sumAvance += (parseFloat(rows[i]['Avance (%)']) || 0);
             if ((rows[i]['Rol Operativo'] || '').indexOf('Revisor') !== -1) {
                 supervisorCount++;
             }
@@ -122,7 +122,7 @@ QC.Tabs.Profiles = (function (Config, Data) {
 
         for (var j = 0; j < rows.length; j++) {
             var r      = rows[j];
-            var avance = parseInt(r['Avance (%)'], 10) || 0;
+            var avance = parseFloat(r['Avance (%)']) || 0;
             var badgeCls = Config.statusBadgeClass[r['Estado']] || 'status-badge--pending';
 
             tableHtml +=
