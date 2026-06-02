@@ -128,7 +128,7 @@ QC.Data = (function (Config) {
             if (!r.hasOwnProperty('Observaciones')) { r['Observaciones'] = ''; }
 
             /* Sanitise types */
-            r['Avance (%)']    = parseInt(r['Avance (%)'], 10) || 0;
+            r['Avance (%)']    = Math.min(100, Math.max(0, parseFloat(r['Avance (%)']) || 0));
             r['Observaciones'] = String(r['Observaciones'] || '');
             r['Estado']        = String(r['Estado']        || 'Pendiente');
             r['Proyecto']      = String(r['Proyecto']      || '');
@@ -216,7 +216,7 @@ QC.Data = (function (Config) {
                 if (!patch) { return r; }
                 var updated = Object.assign({}, r);
                 if (patch.hasOwnProperty('Estado'))        { updated['Estado']        = patch['Estado']; }
-                if (patch.hasOwnProperty('Avance (%)'))    { updated['Avance (%)']    = parseInt(patch['Avance (%)'], 10) || 0; }
+                if (patch.hasOwnProperty('Avance (%)'))    { updated['Avance (%)']    = Math.min(100, Math.max(0, parseFloat(patch['Avance (%)']) || 0)); }
                 if (patch.hasOwnProperty('Observaciones')) { updated['Observaciones'] = patch['Observaciones']; }
                 if (patch.hasOwnProperty('Autores'))       { updated['Autores']       = patch['Autores']; }
                 return updated;
