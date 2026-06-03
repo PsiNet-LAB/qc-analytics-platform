@@ -106,4 +106,4 @@ Semana | Fecha | Horario | Proyecto | Autores | Revisor | Estado | Avance (%) | 
 ## Contacto e Institucionalidad
 
 Desarrollado en el marco de las investigaciones en métodos cuantitativos avanzados y análisis de redes para el estudio del comportamiento humano.  
-Contáctese a: psinetlab@gmail.com
+Contáctese a: info@psinetlab.dpdns.org
